@@ -1,0 +1,1 @@
+export default function Page({ params }: { params: { name: string } }) { return <div>Category: {params.name}</div>; }
