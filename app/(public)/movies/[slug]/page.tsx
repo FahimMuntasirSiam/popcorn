@@ -191,48 +191,32 @@ export default async function MovieDetailPage({
           <CommentSection postId={movie.id} />
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-8">
-           <section className="bg-popcorn-card p-6 rounded-xl border border-white/5 space-y-6">
-              <h3 className="text-xl font-bold flex items-center space-x-2">
-                <Download size={20} className="text-popcorn-red" />
-                <span>Download Links</span>
-              </h3>
-              <AdUnit type="sidebar" position="movie_sidebar_top" />
-              
-              <div className="space-y-3">
-                 {/* Map real links if they exist, otherwise show placeholders */}
-                 {movie.download_links && movie.download_links.length > 0 ? (
-                    movie.download_links.map((link: DownloadLink, i: number) => (
-                      <Link 
-                        key={i}
-                        href={`/download/${link.slug}`}
-                        className="w-full flex items-center justify-between bg-white/5 hover:bg-popcorn-red group p-4 rounded-lg transition-all border border-white/5"
-                      >
-                         <span className="font-bold group-hover:text-white">{link.label || 'Download Now'}</span>
-                         <span className="text-xs text-popcorn-secondary group-hover:text-white/80">{link.quality || 'HD'}</span>
-                      </Link>
-                    ))
-                 ) : (
-                    <>
-                      <Link 
-                        href={`/download/${movie.slug}`}
-                        className="w-full flex items-center justify-between bg-white/5 hover:bg-popcorn-red group p-4 rounded-lg transition-all border border-white/5"
-                      >
-                         <span className="font-bold group-hover:text-white">Download (720p)</span>
-                         <span className="text-xs text-popcorn-secondary group-hover:text-white/80">1.2 GB</span>
-                      </Link>
-                      <Link 
-                        href={`/download/${movie.slug}`}
-                        className="w-full flex items-center justify-between bg-white/5 hover:bg-popcorn-red group p-4 rounded-lg transition-all border border-white/5"
-                      >
-                         <span className="font-bold group-hover:text-white">Download (1080p)</span>
-                         <span className="text-xs text-popcorn-secondary group-hover:text-white/80">2.5 GB</span>
-                      </Link>
-                    </>
-                 )}
-              </div>
-           </section>
+         {/* Sidebar */}
+         <div className="space-y-8">
+           {movie.download_links && movie.download_links.length > 0 && (
+             <section className="bg-popcorn-card p-6 rounded-xl border border-white/5 space-y-6">
+                <h3 className="text-xl font-bold flex items-center space-x-2">
+                  <Download size={20} className="text-popcorn-red" />
+                  <span>Download Links</span>
+                </h3>
+                <AdUnit type="sidebar" position="movie_sidebar_top" />
+                
+                <div className="space-y-3">
+                   {movie.download_links.map((link: DownloadLink, i: number) => (
+                     <Link 
+                       key={i}
+                       href={`/download/${link.slug}`}
+                       className="w-full flex items-center justify-between bg-white/5 hover:bg-popcorn-red group p-4 rounded-lg transition-all border border-white/5"
+                     >
+                        <span className="font-bold group-hover:text-white">{link.label || 'Download Now'}</span>
+                        <span className="text-xs text-popcorn-secondary group-hover:text-white/80">{link.quality || 'HD'}</span>
+                     </Link>
+                   ))}
+                </div>
+             </section>
+           )}
+
+           <section className="bg-popcorn-card p-6 rounded-xl border border-white/5 space-y-4 text-sm">
 
            <section className="bg-popcorn-card p-6 rounded-xl border border-white/5 space-y-4 text-sm">
               <h3 className="font-bold text-white uppercase tracking-wider text-xs">Details</h3>
