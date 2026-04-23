@@ -6,6 +6,7 @@ import Hero from '@/components/home/Hero'
 import MovieRow from '@/components/home/MovieRow'
 import BlogGrid from '@/components/home/BlogGrid'
 import { Post } from '@/types'
+import AdUnit from '@/components/ui/AdUnit'
 
 export default function Home() {
   const [trending, setTrending] = useState<Post[]>([])
@@ -59,13 +60,14 @@ export default function Home() {
   return (
     <div className="pb-20">
       {featuredMovie && <Hero movie={featuredMovie} />}
-      
       <div className="space-y-12 mt-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <MovieRow 
           title="Trending Movies" 
           movies={trending} 
           loading={loading} 
         />
+
+        <AdUnit type="banner" position="home_after_first_row" />
         
         <MovieRow 
           title="Latest Trailers" 

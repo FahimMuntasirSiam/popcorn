@@ -64,6 +64,12 @@ export async function middleware(req: NextRequest) {
     if (!session) {
       return NextResponse.redirect(new URL('/auth/login', req.url))
     }
+    
+    // Only allow specific admin email
+    const adminEmail = 'fahimmuntasirsiam@gmail.com'
+    if (session.user.email !== adminEmail) {
+      return NextResponse.redirect(new URL('/', req.url))
+    }
   }
 
   return res

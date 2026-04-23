@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
-import ImageExtension from '@tiptap/extension-image'
-import Color from '@tiptap/extension-color'
-import TextStyle from '@tiptap/extension-text-style'
-import Highlight from '@tiptap/extension-highlight'
-import CharacterCount from '@tiptap/extension-character-count'
+import { Underline } from '@tiptap/extension-underline'
+import { Link } from '@tiptap/extension-link'
+import { Image as ImageExtension } from '@tiptap/extension-image'
+import { Color } from '@tiptap/extension-color'
+import { TextStyle } from '@tiptap/extension-text-style'
+import { Highlight } from '@tiptap/extension-highlight'
+import { CharacterCount } from '@tiptap/extension-character-count'
 import TipTapToolbar from './TipTapToolbar'
 import { 
   Save, 
@@ -59,6 +59,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
 
   // TipTap Initialize
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Underline,

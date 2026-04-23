@@ -5,6 +5,35 @@ import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import CommentSection from '@/components/interactions/CommentSection'
+import AdUnit from '@/components/ui/AdUnit'
+import { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const supabase = createClient()
+  const { data: post } = await supabase.from('posts').select('*').eq('slug', params.slug).single()
+
+  if (!post) return { title: 'Not Found | Popcorn' }
+
+  const title = `${post.title} | Popcorn`
+  const description = post.meta_description || post.content?.substring(0, 160) || ''
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: post.cover_image ? [{ url: post.cover_image }] : [],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: post.cover_image ? [post.cover_image] : [],
+    },
+  }
+}
 
 export default async function BlogPostPage({ 
   params 
@@ -26,8 +55,25 @@ export default async function BlogPostPage({
   // Calculate reading time (roughly 200 words per minute)
   const readingTime = Math.ceil((post.word_count || 1) / 200)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.meta_description,
+    image: post.cover_image,
+    datePublished: post.created_at,
+    author: {
+      '@type': 'Person',
+      name: 'Popcorn Editor',
+    },
+  }
+
   return (
     <article className="bg-popcorn-dark min-h-screen text-white pt-12 pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-4xl mx-auto px-4">
         {/* Breadcrumb */}
         <Link 
@@ -81,11 +127,28 @@ export default async function BlogPostPage({
 
         {/* Content Section */}
         <div className="prose prose-invert prose-red max-w-none">
-          {/* Renders TipTap content - Basic styling for now */}
-          <div 
-            className="text-gray-300 leading-relaxed text-lg space-y-6"
-            dangerouslySetInnerHTML={{ __html: post.content || '<p>No content available.</p>' }} 
-          />
+          {/* Renders TipTap content with in-article ad */}
+          <div className="text-gray-300 leading-relaxed text-lg space-y-6">
+             {post.content ? (
+               (() => {
+                 const paragraphs = post.content.split('</p>');
+                 if (paragraphs.length <= 3) {
+                   return <div dangerouslySetInnerHTML={{ __html: post.content }} />;
+                 }
+                 const firstPart = paragraphs.slice(0, 3).join('</p>') + '</p>';
+                 const secondPart = paragraphs.slice(3).join('</p>');
+                 return (
+                   <>
+                     <div dangerouslySetInnerHTML={{ __html: firstPart }} />
+                     <AdUnit type="native" position="blog_in_article" />
+                     <div dangerouslySetInnerHTML={{ __html: secondPart }} />
+                   </>
+                 );
+               })()
+             ) : (
+               <p>No content available.</p>
+             )}
+          </div>
         </div>
 
         {/* Floating red accents / dividers */}

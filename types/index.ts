@@ -16,7 +16,7 @@ export type PostStatus = 'draft' | 'published';
 
 export type DownloadLink = {
   label: string;
-  url: string;
+  url?: string;
   slug: string;
   quality?: string;
 };

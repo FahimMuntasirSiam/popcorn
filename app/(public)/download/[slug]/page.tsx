@@ -13,17 +13,13 @@ interface DownloadPageProps {
 
 export default async function DownloadPage({ params, searchParams }: DownloadPageProps) {
   const supabase = createClient()
-  const linkSlug = searchParams.link
+  const linkSlug = params.slug
 
-  if (!linkSlug) {
-    notFound()
-  }
-
-  // 1. Fetch current movie
+  // 1. Fetch movie that contains this link slug
   const { data: movie } = await supabase
     .from('posts')
     .select('*')
-    .eq('slug', params.slug)
+    .contains('download_links', [{ slug: linkSlug }])
     .single()
 
   if (!movie) {
@@ -38,9 +34,15 @@ export default async function DownloadPage({ params, searchParams }: DownloadPag
     .neq('id', movie.id)
     .limit(4)
 
+  // 3. SECURE: Remove URLs from download links before passing to Client Component
+  const safeMovie = {
+    ...movie,
+    download_links: (movie.download_links || []).map(({ url, ...rest }: any) => rest)
+  }
+
   return (
     <DownloadGate 
-      movie={movie} 
+      movie={safeMovie as any} 
       linkSlug={linkSlug} 
       relatedMovies={relatedMovies || []} 
     />

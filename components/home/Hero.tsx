@@ -21,6 +21,7 @@ export default function Hero({ movie }: HeroProps) {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-popcorn-dark via-popcorn-dark/60 to-transparent" />

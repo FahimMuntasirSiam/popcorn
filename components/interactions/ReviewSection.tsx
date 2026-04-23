@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
-import { Star, Loader2 } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
+
+import { User } from '@supabase/supabase-js'
 
 interface ReviewSectionProps {
   postId: string;
@@ -16,7 +19,7 @@ export default function ReviewSection({ postId }: ReviewSectionProps) {
   const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -47,7 +50,7 @@ export default function ReviewSection({ postId }: ReviewSectionProps) {
 
     // Fetch User Rating
     if (user) {
-      const { data: userReview, error } = await supabase
+      const { data: userReview } = await supabase
         .from('reviews')
         .select('rating')
         .eq('post_id', postId)

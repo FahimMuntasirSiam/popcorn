@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     // 3. Fetch link from database
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = createClient()
     const { data: post, error } = await supabase
       .from('posts')
       .select('download_links')

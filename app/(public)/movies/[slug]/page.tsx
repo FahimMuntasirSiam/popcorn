@@ -6,6 +6,35 @@ import Link from 'next/link'
 import { DownloadLink } from '@/types'
 import CommentSection from '@/components/interactions/CommentSection'
 import ReviewSection from '@/components/interactions/ReviewSection'
+import AdUnit from '@/components/ui/AdUnit'
+import { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const supabase = createClient()
+  const { data: movie } = await supabase.from('posts').select('*').eq('slug', params.slug).single()
+
+  if (!movie) return { title: 'Not Found | Popcorn' }
+
+  const title = `${movie.title} | Popcorn`
+  const description = movie.meta_description || movie.content?.substring(0, 160) || ''
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: movie.cover_image ? [{ url: movie.cover_image }] : [],
+      type: 'video.movie',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: movie.cover_image ? [movie.cover_image] : [],
+    },
+  }
+}
 
 export default async function MovieDetailPage({ 
   params 
@@ -34,8 +63,26 @@ export default async function MovieDetailPage({
 
   const videoId = getYoutubeId(movie.trailer_url)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Movie',
+    name: movie.title,
+    description: movie.meta_description,
+    image: movie.cover_image,
+    datePublished: movie.created_at,
+    aggregateRating: movie.avg_rating ? {
+      '@type': 'AggregateRating',
+      ratingValue: movie.avg_rating,
+      reviewCount: movie.total_reviews || 1,
+    } : undefined,
+  }
+
   return (
     <div className="bg-popcorn-dark min-h-screen text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero Header with Backdrop */}
       <div className="relative w-full h-[60vh] md:h-[70vh]">
         <div className="absolute inset-0">
@@ -140,6 +187,7 @@ export default async function MovieDetailPage({
           )}
 
           {/* Comments Section */}
+          <AdUnit type="banner" position="movie_after_trailer" />
           <CommentSection postId={movie.id} />
         </div>
 
@@ -150,6 +198,7 @@ export default async function MovieDetailPage({
                 <Download size={20} className="text-popcorn-red" />
                 <span>Download Links</span>
               </h3>
+              <AdUnit type="sidebar" position="movie_sidebar_top" />
               
               <div className="space-y-3">
                  {/* Map real links if they exist, otherwise show placeholders */}
@@ -157,7 +206,7 @@ export default async function MovieDetailPage({
                     movie.download_links.map((link: DownloadLink, i: number) => (
                       <Link 
                         key={i}
-                        href={`/download/${movie.slug}?link=${link.slug}`}
+                        href={`/download/${link.slug}`}
                         className="w-full flex items-center justify-between bg-white/5 hover:bg-popcorn-red group p-4 rounded-lg transition-all border border-white/5"
                       >
                          <span className="font-bold group-hover:text-white">{link.label || 'Download Now'}</span>

@@ -2,15 +2,16 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, ChevronDown, User, LogOut, Settings } from 'lucide-react'
+import { Menu, X, ChevronDown, User as UserIcon, LogOut, Settings } from 'lucide-react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { User } from '@supabase/supabase-js'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [lang, setLang] = useState<'EN' | 'BN'>('EN')
   
   const supabase = createBrowserClient(
@@ -34,6 +35,34 @@ export default function Navbar() {
       authListener.subscription.unsubscribe()
     }
   }, [supabase])
+
+  useEffect(() => {
+    // Detect current language from cookie
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift();
+    };
+    
+    const currentLang = getCookie('googtrans');
+    if (currentLang === '/en/bn') {
+      setLang('BN');
+    } else {
+      setLang('EN');
+    }
+  }, []);
+
+  const toggleLanguage = () => {
+    const newLang = lang === 'EN' ? 'BN' : 'EN';
+    const cookieValue = newLang === 'BN' ? '/en/bn' : '/en/en';
+    
+    // Set cookie for both domain and subdomains if necessary, but starting with root path
+    document.cookie = `googtrans=${cookieValue}; path=/`;
+    document.cookie = `googtrans=${cookieValue}; path=/; domain=${window.location.hostname}`;
+    
+    setLang(newLang);
+    window.location.reload();
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -78,10 +107,12 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center space-x-4">
             <button
-              onClick={() => setLang(lang === 'EN' ? 'BN' : 'EN')}
-              className="px-3 py-1 text-[10px] font-black border border-white/20 rounded-md hover:bg-white/10 transition-colors tracking-widest"
+              onClick={toggleLanguage}
+              className="px-4 py-1.5 text-[11px] font-black bg-white/5 border border-white/10 rounded-full hover:bg-popcorn-red hover:text-white transition-all tracking-[0.2em] shadow-lg flex items-center space-x-2 group"
             >
-              {lang === 'EN' ? 'EN / বাংলা' : 'বাংলা / EN'}
+              <span className={lang === 'EN' ? 'text-white' : 'text-white/40'}>EN</span>
+              <span className="text-white/20">|</span>
+              <span className={lang === 'BN' ? 'text-white' : 'text-white/40'}>বাংলা</span>
             </button>
             
             {user ? (
@@ -95,7 +126,7 @@ export default function Navbar() {
                       <Image src={userAvatar} alt={userDisplayName} fill className="object-cover" />
                     ) : (
                       <div className="w-full h-full bg-popcorn-red flex items-center justify-center">
-                        <User size={16} className="text-white" />
+                        <UserIcon size={16} className="text-white" />
                       </div>
                     )}
                   </div>
@@ -112,7 +143,7 @@ export default function Navbar() {
                        <p className="text-sm font-bold text-white truncate">{user.email}</p>
                     </div>
                     <div className="p-2">
-                       {user?.email?.split('@')[1] === 'gmail.com' && ( // Simple check for admin demo
+                       {user?.email === 'fahimmuntasirsiam@gmail.com' && (
                          <Link 
                           href="/admin"
                           className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm text-popcorn-secondary hover:text-white hover:bg-white/5 transition-all"
@@ -169,10 +200,11 @@ export default function Navbar() {
             ))}
             <div className="flex flex-col space-y-4 pt-4 pb-6 border-t border-white/5 mx-3">
                <button
-                onClick={() => setLang(lang === 'EN' ? 'BN' : 'EN')}
-                className="text-left py-2 text-sm font-bold text-popcorn-secondary"
+                onClick={toggleLanguage}
+                className="text-left py-4 px-3 text-sm font-black text-popcorn-secondary flex items-center justify-between bg-white/5 rounded-xl border border-white/5 active:scale-95 transition-all"
               >
-                Language: {lang === 'EN' ? 'English' : 'বাংলা'}
+                <span className="uppercase tracking-widest">Language</span>
+                <span className="text-white bg-popcorn-red px-3 py-1 rounded-md">{lang === 'EN' ? 'English' : 'বাংলা'}</span>
               </button>
               {user ? (
                  <div className="space-y-4">
@@ -182,7 +214,7 @@ export default function Navbar() {
                           <Image src={userAvatar} alt={userDisplayName} fill className="object-cover" />
                         ) : (
                           <div className="w-full h-full bg-popcorn-red flex items-center justify-center">
-                            <User size={20} className="text-white" />
+                            <UserIcon size={20} className="text-white" />
                           </div>
                         )}
                       </div>

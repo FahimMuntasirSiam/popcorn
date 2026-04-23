@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Download, Loader2, ArrowLeft, ExternalLink, AlertCircle } from 'lucide-react'
+import AdUnit from '@/components/ui/AdUnit'
 import { toast } from 'sonner'
 import MovieCard from '@/components/cards/MovieCard'
 import { Post, DownloadLink } from '@/types'
@@ -58,7 +59,7 @@ export default function DownloadGate({ movie, linkSlug, relatedMovies }: Downloa
       } else {
         toast.error(data.error || 'Failed to retrieve link. Please try again.')
       }
-    } catch (err) {
+    } catch {
       toast.error('An error occurred. Please refresh the page.')
     } finally {
       setLoading(false)
@@ -96,14 +97,14 @@ export default function DownloadGate({ movie, linkSlug, relatedMovies }: Downloa
                     <span className="text-popcorn-red text-[10px] font-black uppercase tracking-[0.2em]">{selectedLink?.quality || 'High Quality'}</span>
                     <h1 className="text-3xl md:text-4xl font-black">{movie.title}</h1>
                  </div>
-                 <p className="text-popcorn-secondary font-medium">Your request for <b className="text-white">"{selectedLink?.label}"</b> is being processed. Please wait a moment.</p>
+                 <p className="text-popcorn-secondary font-medium">Your request for <b className="text-white">&quot;{selectedLink?.label}&quot;</b> is being processed. Please wait a moment.</p>
               </div>
            </div>
 
            <div className="mt-12 space-y-8">
               {/* Ad Placeholder 1 */}
               <div className="w-full bg-white/5 border border-dashed border-white/10 rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[150px]">
-                 <!-- ADSTERRA AD UNIT HERE -->
+                 <AdUnit type="banner" position="download_top_countdown" />
                  <span className="text-[10px] font-bold text-neutral-700 uppercase tracking-widest mb-2">Advertisement</span>
                  <p className="text-xs text-neutral-600">Enjoy some news while you wait</p>
               </div>
@@ -159,7 +160,7 @@ export default function DownloadGate({ movie, linkSlug, relatedMovies }: Downloa
                  <AlertCircle className="text-popcorn-gold shrink-0 mt-1" size={18} />
                  <div className="space-y-1">
                     <h4 className="text-xs font-black uppercase tracking-widest text-white">How to Download?</h4>
-                    <p className="text-[11px] text-popcorn-secondary leading-relaxed">After the timer ends, click the red button. If the link doesn't open automatically, please disable your pop-up blocker or click the button again.</p>
+                    <p className="text-[11px] text-popcorn-secondary leading-relaxed">After the timer ends, click the red button. If the link doesn&apos;t open automatically, please disable your pop-up blocker or click the button again.</p>
                  </div>
               </div>
            </div>
@@ -167,7 +168,7 @@ export default function DownloadGate({ movie, linkSlug, relatedMovies }: Downloa
 
         {/* Ad Placeholder 2 */}
         <div className="mt-12 w-full bg-white/5 border border-dashed border-white/10 rounded-2xl p-4 text-center">
-           <!-- ADSTERRA AD UNIT HERE -->
+           <AdUnit type="banner" position="download_bottom_banner" />
            <span className="text-[8px] font-black text-neutral-800 uppercase tracking-widest">Sponsored Content</span>
         </div>
 
