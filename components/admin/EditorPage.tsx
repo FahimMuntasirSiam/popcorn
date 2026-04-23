@@ -61,9 +61,16 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        history: true,
+      }),
       Underline,
-      Link.configure({ openOnClick: false }),
+      Link.configure({ 
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-popcorn-red underline'
+        }
+      }),
       ImageExtension,
       TextStyle,
       Color,
