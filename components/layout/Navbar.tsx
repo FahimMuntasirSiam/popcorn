@@ -108,7 +108,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             <button
               onClick={toggleLanguage}
-              className="px-4 py-1.5 text-[11px] font-black bg-white/5 border border-white/10 rounded-full hover:bg-popcorn-red hover:text-white transition-all tracking-[0.2em] shadow-lg flex items-center space-x-2 group"
+              className="px-4 py-1.5 text-[11px] font-black bg-white/5 border border-white/10 rounded-full hover:bg-popcorn-red hover:text-white transition-all tracking-[0.2em] shadow-lg flex items-center space-x-2 group notranslate"
             >
               <span className={lang === 'EN' ? 'text-white' : 'text-white/40'}>EN</span>
               <span className="text-white/20">|</span>
@@ -201,7 +201,7 @@ export default function Navbar() {
             <div className="flex flex-col space-y-4 pt-4 pb-6 border-t border-white/5 mx-3">
                <button
                 onClick={toggleLanguage}
-                className="text-left py-4 px-3 text-sm font-black text-popcorn-secondary flex items-center justify-between bg-white/5 rounded-xl border border-white/5 active:scale-95 transition-all"
+                className="text-left py-4 px-3 text-sm font-black text-popcorn-secondary flex items-center justify-between bg-white/5 rounded-xl border border-white/5 active:scale-95 transition-all notranslate"
               >
                 <span className="uppercase tracking-widest">Language</span>
                 <span className="text-white bg-popcorn-red px-3 py-1 rounded-md">{lang === 'EN' ? 'English' : 'বাংলা'}</span>
