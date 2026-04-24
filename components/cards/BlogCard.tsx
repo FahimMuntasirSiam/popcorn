@@ -28,8 +28,8 @@ export default function BlogCard({ post }: BlogCardProps) {
           )}
           
           <div className="absolute top-2 left-2">
-            <span className="bg-popcorn-red text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-md">
-              {post.category.replace('-', ' ')}
+            <span className="bg-popcorn-red text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider shadow-md text-white">
+              {post.category}
             </span>
           </div>
         </div>

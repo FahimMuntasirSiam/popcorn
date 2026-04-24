@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, ChevronDown, User as UserIcon, LogOut, Settings } from 'lucide-react'
+import { Menu, X, ChevronDown, User as UserIcon, LogOut, Settings, Search } from 'lucide-react'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -19,6 +19,15 @@ export default function Navbar() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
   const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchQuery('')
+    }
+  }
 
   useEffect(() => {
     const getUser = async () => {
@@ -105,7 +114,20 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-6">
+            <form onSubmit={handleSearch} className="relative group">
+              <input 
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search movies..."
+                className="bg-white/5 border border-white/10 rounded-full py-1.5 pl-4 pr-10 text-xs text-white focus:outline-none focus:ring-1 focus:ring-popcorn-red focus:bg-white/10 transition-all w-48 lg:w-64"
+              />
+              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-popcorn-secondary group-focus-within:text-popcorn-red transition-colors">
+                <Search size={14} />
+              </button>
+            </form>
+
             <button
               onClick={toggleLanguage}
               className="px-4 py-1.5 text-[11px] font-black bg-white/5 border border-white/10 rounded-full hover:bg-popcorn-red hover:text-white transition-all tracking-[0.2em] shadow-lg flex items-center space-x-2 group notranslate"
@@ -198,6 +220,18 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+            <form onSubmit={handleSearch} className="px-3 py-4 relative">
+              <input 
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search movies..."
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-4 pr-10 text-sm text-white focus:outline-none"
+              />
+              <button type="submit" className="absolute right-6 top-1/2 -translate-y-1/2 text-popcorn-secondary">
+                <Search size={18} />
+              </button>
+            </form>
             <div className="flex flex-col space-y-4 pt-4 pb-6 border-t border-white/5 mx-3">
                <button
                 onClick={toggleLanguage}

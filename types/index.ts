@@ -1,16 +1,5 @@
-export type PostCategory = 
-  | 'movie-blog' 
-  | 'movie-news' 
-  | 'trailer' 
-  | 'teaser' 
-  | 'review';
-
-export type LanguageTag = 
-  | 'bangla' 
-  | 'hindi' 
-  | 'english' 
-  | 'anime' 
-  | 'other';
+export type PostCategory = string;
+export type LanguageTag = string;
 
 export type PostStatus = 'draft' | 'published';
 
@@ -30,6 +19,7 @@ export type Post = {
   cover_image: string | null;
   category: PostCategory;
   language_tag: LanguageTag;
+  genre: string | null;
   trailer_url: string | null;
   download_links: DownloadLink[];
   status: PostStatus;

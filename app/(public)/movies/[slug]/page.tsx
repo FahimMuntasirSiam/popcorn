@@ -112,11 +112,16 @@ export default async function MovieDetailPage({
           <div className="space-y-4 pb-4">
              <div className="flex flex-wrap gap-2">
                 <span className="bg-popcorn-red text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
-                  {movie.category.replace('-', ' ')}
+                  {movie.category}
                 </span>
                 <span className="bg-white/10 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-white/10 backdrop-blur-sm">
                   {movie.language_tag}
                 </span>
+                {movie.genre && (
+                  <span className="bg-white/10 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-white/10 backdrop-blur-sm">
+                    {movie.genre}
+                  </span>
+                )}
              </div>
              
              <h1 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight leading-none drop-shadow-2xl">{movie.title}</h1>
@@ -229,6 +234,12 @@ export default async function MovieDetailPage({
                   <span className="text-popcorn-secondary">Language</span>
                   <span className="text-white capitalize">{movie.language_tag}</span>
                 </div>
+                {movie.genre && (
+                  <div className="flex justify-between">
+                    <span className="text-popcorn-secondary">Genre</span>
+                    <span className="text-white capitalize">{movie.genre}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-popcorn-secondary">Category</span>
                   <span className="text-white capitalize">{movie.category}</span>

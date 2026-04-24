@@ -46,8 +46,9 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const [title, setTitle] = useState(initialData?.title || '')
   const [slug, setSlug] = useState(initialData?.slug || '')
   const [metaDescription, setMetaDescription] = useState(initialData?.meta_description || '')
-  const [category, setCategory] = useState<PostCategory>(initialData?.category || 'movie-blog')
+  const [category, setCategory] = useState<PostCategory>(initialData?.category || 'movies')
   const [languageTag, setLanguageTag] = useState<LanguageTag>(initialData?.language_tag || 'english')
+  const [genre, setGenre] = useState(initialData?.genre || '')
   const [trailerUrl, setTrailerUrl] = useState(initialData?.trailer_url || '')
   const [status, setStatus] = useState<PostStatus>(initialData?.status || 'draft')
   const [downloadLinks, setDownloadLinks] = useState<DownloadLink[]>(initialData?.download_links || [])
@@ -124,7 +125,8 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
       content: editor?.getHTML() || '',
       meta_description: metaDescription,
       category,
-      language_tag: languageTag,
+      language_tag: languageTag.toLowerCase(),
+      genre: genre.toLowerCase(),
       trailer_url: trailerUrl,
       status: currentStatus,
       download_links: downloadLinks,
@@ -167,7 +169,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
 
     return () => clearInterval(interval)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, editor, slug, metaDescription, category, languageTag])
+  }, [title, editor, slug, metaDescription, category, languageTag, genre])
 
   // Image Upload
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -325,30 +327,49 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                    <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider text-[10px]">Category</label>
                    <select 
                     value={category}
-                    onChange={(e) => setCategory(e.target.value as PostCategory)}
+                    onChange={(e) => setCategory(e.target.value)}
                     className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-popcorn-red"
                    >
-                     <option value="movie-blog">Movie Blog</option>
-                     <option value="movie-news">Movie News</option>
-                     <option value="trailer">Trailer</option>
-                     <option value="teaser">Teaser</option>
-                     <option value="review">Review</option>
+                     <option value="movies">Movies</option>
+                     <option value="blogs">Blogs</option>
+                     <option value="trailers">Trailers</option>
                    </select>
                  </div>
                  <div className="space-y-1">
                    <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider text-[10px]">Language</label>
-                   <select 
+                   <input 
+                    list="languages"
                     value={languageTag}
-                    onChange={(e) => setLanguageTag(e.target.value as LanguageTag)}
+                    onChange={(e) => setLanguageTag(e.target.value)}
+                    placeholder="e.g. English, Chinese..."
                     className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-popcorn-red"
-                   >
-                     <option value="english">English</option>
-                     <option value="bangla">Bangla</option>
-                     <option value="hindi">Hindi</option>
-                     <option value="anime">Anime</option>
-                     <option value="other">Other</option>
-                   </select>
+                   />
+                   <datalist id="languages">
+                     <option value="english" />
+                     <option value="bangla" />
+                     <option value="hindi" />
+                     <option value="chinese" />
+                     <option value="anime" />
+                   </datalist>
                  </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider text-[10px]">Genre</label>
+                <input 
+                  list="genres"
+                  value={genre}
+                  onChange={(e) => setGenre(e.target.value)}
+                  placeholder="e.g. Action, Horror, Comedy..."
+                  className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-popcorn-red"
+                />
+                <datalist id="genres">
+                  <option value="action" />
+                  <option value="horror" />
+                  <option value="comedy" />
+                  <option value="drama" />
+                  <option value="sci-fi" />
+                </datalist>
               </div>
 
               <div className="space-y-1">

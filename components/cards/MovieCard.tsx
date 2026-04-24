@@ -8,12 +8,16 @@ interface MovieCardProps {
   movie: Post;
 }
 
-const languageColors: Record<LanguageTag, string> = {
+const languageColors: Record<string, string> = {
   english: 'bg-red-600',
   bangla: 'bg-green-600',
   hindi: 'bg-blue-600',
+  chinese: 'bg-orange-600',
   anime: 'bg-purple-600',
-  other: 'bg-gray-600',
+}
+
+const getLanguageColor = (lang: string) => {
+  return languageColors[lang.toLowerCase()] || 'bg-gray-600'
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
@@ -44,7 +48,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
 
           {/* Language Badge */}
           <div className="absolute top-2 left-2">
-            <span className={`${languageColors[movie.language_tag]} text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-md`}>
+            <span className={`${getLanguageColor(movie.language_tag)} text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider shadow-md text-white`}>
               {movie.language_tag}
             </span>
           </div>
