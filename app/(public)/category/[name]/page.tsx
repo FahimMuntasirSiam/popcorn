@@ -108,7 +108,7 @@ function CategoryView({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {posts.map((post, index) => (
             <React.Fragment key={post.id}>
-              {post.category === 'blogs' ? (
+              {['blogs', 'movie-blog', 'movie-news'].includes(post.category) ? (
                 <BlogCard post={post} />
               ) : (
                 <MovieCard movie={post} />
