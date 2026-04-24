@@ -215,31 +215,31 @@ export default async function MovieDetailPage({
                    </h3>
                 </div>
                 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
+                <div className="overflow-x-auto scrollbar-hide">
+                  <table className="w-full text-left border-collapse min-w-[320px]">
                     <thead>
-                      <tr className="bg-black/40 text-[10px] font-black uppercase tracking-[0.2em] text-popcorn-secondary border-b border-white/5">
-                        <th className="px-8 py-4">Quality</th>
-                        <th className="px-8 py-4">Size</th>
-                        <th className="px-8 py-4 text-right">Action</th>
+                      <tr className="bg-black/40 text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500 border-b border-white/5">
+                        <th className="pl-6 py-4">Quality</th>
+                        <th className="px-4 py-4">Size</th>
+                        <th className="pr-6 py-4 text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
                       {movie.download_links.map((link: any, i: number) => (
                         <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
-                          <td className="px-8 py-6">
-                            <span className="text-sm font-black text-white group-hover:text-popcorn-red transition-colors">{link.quality}</span>
+                          <td className="pl-6 py-5">
+                            <span className="text-xs font-black text-white group-hover:text-popcorn-red transition-colors capitalize">{link.quality}</span>
                           </td>
-                          <td className="px-8 py-6">
-                            <span className="text-xs font-bold text-popcorn-secondary">{link.size || '--'}</span>
+                          <td className="px-4 py-5">
+                            <span className="text-[10px] font-bold text-popcorn-secondary">{link.size || '--'}</span>
                           </td>
-                          <td className="px-8 py-6 text-right">
+                          <td className="pr-6 py-5 text-right">
                             <Link 
                               href={`/download/${movie.slug}/${link.slug || `${movie.slug}-${link.quality}`}`}
-                              className="inline-flex items-center space-x-2 bg-popcorn-red text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-popcorn-red transition-all shadow-lg shadow-popcorn-red/20 active:scale-95"
+                              className="inline-flex items-center space-x-2 bg-popcorn-red text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-popcorn-red transition-all shadow-lg shadow-popcorn-red/20 active:scale-95 whitespace-nowrap"
                             >
                                <span>Download</span>
-                               <span className="text-xs">▶</span>
+                               <span className="text-[8px]">▶</span>
                             </Link>
                           </td>
                         </tr>

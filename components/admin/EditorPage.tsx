@@ -202,13 +202,24 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
     setDownloadLinks([...downloadLinks, { label: '', slug: '', quality: '1080p', size: '', message_id: 0 }])
   }
 
-  const updateDownloadRow = (index: number, field: keyof DownloadLink, value: any) => {
+  const updateDownloadRow = (index: number, field: any, value: any) => {
     const newLinks = [...downloadLinks]
-    const updatedLink = { ...newLinks[index], [field]: value }
+    const updatedLink = { ...newLinks[index] }
+    
+    if (field === 'telegram_link') {
+      // Extract message ID from links like https://t.me/c/12345/42 or https://t.me/channel/42
+      const match = value.match(/\/(\d+)$/)
+      if (match) {
+        updatedLink.message_id = parseInt(match[1])
+      }
+      (updatedLink as any).telegram_link = value
+    } else {
+      (updatedLink as any)[field] = value
+    }
     
     // Auto-generate slug from post slug + quality
-    if (field === 'quality') {
-      updatedLink.slug = `${slug}-${value}`
+    if (field === 'quality' || field === 'label') {
+      updatedLink.slug = `${slug}-${updatedLink.quality || 'hd'}`
     }
     
     newLinks[index] = updatedLink
@@ -438,26 +449,20 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                              />
                            </div>
                            <div className="space-y-1">
-                             <label className="text-[10px] uppercase font-black text-neutral-600">Telegram Msg ID</label>
+                             <label className="text-[10px] uppercase font-black text-neutral-600">Telegram Link</label>
                              <input 
-                               type="number"
-                               placeholder="e.g. 42"
-                               value={link.message_id || ''}
-                               onChange={(e) => updateDownloadRow(i, 'message_id', parseInt(e.target.value) || 0)}
+                               placeholder="https://t.me/c/..."
+                               value={(link as any).telegram_link || ''}
+                               onChange={(e) => updateDownloadRow(i, 'telegram_link', e.target.value)}
                                className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
                              />
-                             <p className="text-[8px] text-neutral-600 italic">The number at the end of the file link</p>
+                             {link.message_id ? (
+                               <p className="text-[8px] text-green-500 font-bold uppercase tracking-widest mt-1">✓ ID Detected: {link.message_id}</p>
+                             ) : (
+                               <p className="text-[8px] text-neutral-600 italic mt-1">Paste the Telegram message link</p>
+                             )}
                            </div>
                         </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] uppercase font-black text-neutral-600">Link Slug (Auto-generated)</label>
-                          <input 
-                            placeholder="batman-1080p"
-                            value={link.slug || ''}
-                           onChange={(e) => updateDownloadRow(i, 'slug', e.target.value)}
-                           className="w-full bg-transparent border-none text-[10px] text-neutral-500 focus:outline-none focus:text-white font-mono"
-                         />
-                       </div>
                    </div>
                    <button 
                     onClick={() => removeDownloadRow(i)}
