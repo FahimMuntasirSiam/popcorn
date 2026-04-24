@@ -7,7 +7,8 @@ import {
   Search, 
   Edit, 
   Trash2,
-  ExternalLink
+  ExternalLink,
+  Star
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -66,6 +67,20 @@ export default function AllPostsPage() {
     } else {
       toast.success('Post deleted')
       fetchPosts()
+    }
+  }
+
+  const toggleFeatured = async (id: string, currentStatus: boolean) => {
+    const { error } = await supabase
+      .from('posts')
+      .update({ is_featured: !currentStatus })
+      .eq('id', id)
+    
+    if (error) {
+      toast.error('Failed to update featured status')
+    } else {
+      toast.success(!currentStatus ? 'Post featured!' : 'Post unfeatured')
+      setPosts(posts.map(p => p.id === id ? { ...p, is_featured: !currentStatus } : p))
     }
   }
 
@@ -167,9 +182,21 @@ export default function AllPostsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
+                        <button 
+                          onClick={() => toggleFeatured(post.id, post.is_featured)}
+                          className={cn(
+                            "p-2 rounded-lg transition-all",
+                            post.is_featured 
+                              ? "bg-popcorn-gold/20 text-popcorn-gold" 
+                              : "bg-white/5 text-popcorn-secondary hover:text-popcorn-gold"
+                          )}
+                          title={post.is_featured ? "Unfeature" : "Feature on Home"}
+                        >
+                          <Star size={16} fill={post.is_featured ? "currentColor" : "none"} />
+                        </button>
                         <Link 
                           target="_blank"
-                          href={`/movies/${post.slug}`} // Or blog if category is blog
+                          href={`/${['blogs', 'movie-blog', 'movie-news'].includes(post.category) ? 'blog' : 'movies'}/${post.slug}`}
                           className="p-2 text-popcorn-secondary hover:text-blue-500 transition-colors"
                           title="View Live"
                         >
