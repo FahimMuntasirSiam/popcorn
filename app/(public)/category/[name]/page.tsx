@@ -22,11 +22,15 @@ export default async function CategoryPage({
     .eq('status', 'published')
     .order('created_at', { ascending: false })
 
-  // If the URL name matches a category, filter by category
-  // Otherwise, if it matches a language tag, filter by language tag
-  if (['movies', 'blogs', 'trailers'].includes(category)) {
-    query = query.eq('category', category)
+  // Handle category mapping for backward compatibility
+  if (category === 'movies') {
+    query = query.in('category', ['movies', 'review'])
+  } else if (category === 'blogs') {
+    query = query.in('category', ['blogs', 'movie-blog', 'movie-news'])
+  } else if (category === 'trailers') {
+    query = query.in('category', ['trailers', 'trailer', 'teaser'])
   } else {
+    // If not a primary category, try matching language_tag
     query = query.eq('language_tag', category)
   }
 
