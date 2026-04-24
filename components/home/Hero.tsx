@@ -12,9 +12,15 @@ interface HeroProps {
 }
 
 export default function Hero({ movies }: HeroProps) {
-  const [current, setCurrent] = useState(2) // Start with middle if 5 items
+  const [current, setCurrent] = useState(0)
 
-  if (!movies.length) return null
+  useEffect(() => {
+    if (movies.length > 0) {
+      setCurrent(Math.floor(movies.length / 2))
+    }
+  }, [movies.length])
+
+  if (!movies.length || !movies[current]) return null
   const activeMovie = movies[current]
 
   const next = () => setCurrent((prev) => (prev + 1) % movies.length)
@@ -60,7 +66,7 @@ export default function Hero({ movies }: HeroProps) {
                     isFar ? "z-10 scale-75 opacity-20" : "opacity-0 pointer-events-none"
                  )}
                  style={{
-                    transform: `translateX(${offset * (window?.innerWidth < 768 ? 120 : 250)}px)`,
+                    transform: `translateX(${offset * (typeof window !== 'undefined' && window.innerWidth < 768 ? 120 : 250)}px)`,
                  }}
                >
                  <div className={cn(
@@ -114,12 +120,12 @@ export default function Hero({ movies }: HeroProps) {
         <div className="text-center space-y-6 max-w-4xl px-4 animate-in fade-in zoom-in duration-500">
            <div className="flex flex-col items-center space-y-4">
               <h2 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-2xl">
-                {activeMovie.title}
+                {activeMovie?.title}
               </h2>
               <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.2em] text-popcorn-secondary">
-                 <span className="text-popcorn-red">{activeMovie.category}</span>
+                 <span className="text-popcorn-red">{activeMovie?.category || 'Movie'}</span>
                  <span className="w-1 h-1 rounded-full bg-white/20" />
-                 <span>{activeMovie.language_tag}</span>
+                 <span>{activeMovie?.language_tag || 'English'}</span>
                  <span className="w-1 h-1 rounded-full bg-white/20" />
                  <div className="flex items-center text-popcorn-gold">
                     <Star size={12} className="fill-current mr-1" />
@@ -129,7 +135,7 @@ export default function Hero({ movies }: HeroProps) {
            </div>
 
            <p className="text-gray-400 text-sm md:text-base font-medium leading-relaxed max-w-2xl mx-auto line-clamp-2">
-             {activeMovie.meta_description}
+             {activeMovie?.meta_description}
            </p>
 
            <div className="flex justify-center gap-4 pt-4">
