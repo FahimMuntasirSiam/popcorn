@@ -47,27 +47,33 @@ export default function Navbar() {
 
   useEffect(() => {
     // Detect current language from cookie
-    const getCookie = (name: string) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(';').shift();
+    const getLangFromCookie = () => {
+      const cookies = document.cookie.split('; ');
+      const transCookie = cookies.find(row => row.startsWith('googtrans='));
+      if (transCookie) {
+        const value = transCookie.split('=')[1];
+        if (value.includes('/en/bn') || value.includes('/en/BN')) return 'BN';
+      }
+      return 'EN';
     };
     
-    const currentLang = getCookie('googtrans');
-    if (currentLang === '/en/bn') {
-      setLang('BN');
-    } else {
-      setLang('EN');
-    }
+    setLang(getLangFromCookie());
   }, []);
 
   const toggleLanguage = () => {
     const newLang = lang === 'EN' ? 'BN' : 'EN';
     const cookieValue = newLang === 'BN' ? '/en/bn' : '/en/en';
     
-    // Set cookie for both domain and subdomains if necessary, but starting with root path
-    document.cookie = `googtrans=${cookieValue}; path=/`;
-    document.cookie = `googtrans=${cookieValue}; path=/; domain=${window.location.hostname}`;
+    // Clear existing cookies to be sure
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+    
+    // Set new cookie
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000));
+    
+    document.cookie = `googtrans=${cookieValue}; expires=${expires.toUTCString()}; path=/;`;
+    document.cookie = `googtrans=${cookieValue}; expires=${expires.toUTCString()}; path=/; domain=${window.location.hostname};`;
     
     setLang(newLang);
     window.location.reload();
