@@ -205,24 +205,48 @@ export default async function MovieDetailPage({
          {/* Sidebar */}
          <div className="space-y-8">
            {movie.download_links && movie.download_links.length > 0 && (
-             <section className="bg-popcorn-card p-6 rounded-xl border border-white/5 space-y-6">
-                <h3 className="text-xl font-bold flex items-center space-x-2">
-                  <Download size={20} className="text-popcorn-red" />
-                  <span>Download Links</span>
-                </h3>
-                <AdUnit type="sidebar" position="movie_sidebar_top" />
+             <section className="bg-popcorn-card rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
+                <div className="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between">
+                   <h3 className="text-xl font-bold flex items-center space-x-3">
+                     <Download size={22} className="text-popcorn-red" />
+                     <span className="uppercase tracking-tighter">Download Options</span>
+                   </h3>
+                </div>
                 
-                <div className="space-y-3">
-                   {movie.download_links.map((link: DownloadLink, i: number) => (
-                     <Link 
-                       key={i}
-                       href={`/download/${link.slug}`}
-                       className="w-full flex items-center justify-between bg-white/5 hover:bg-popcorn-red group p-4 rounded-lg transition-all border border-white/5"
-                     >
-                        <span className="font-bold group-hover:text-white">{link.label || 'Download Now'}</span>
-                        <span className="text-xs text-popcorn-secondary group-hover:text-white/80">{link.quality || 'HD'}</span>
-                     </Link>
-                   ))}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-black/40 text-[10px] font-black uppercase tracking-[0.2em] text-popcorn-secondary border-b border-white/5">
+                        <th className="px-8 py-4">Quality</th>
+                        <th className="px-8 py-4">Size</th>
+                        <th className="px-8 py-4 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {movie.download_links.map((link: any, i: number) => (
+                        <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
+                          <td className="px-8 py-6">
+                            <span className="text-sm font-black text-white group-hover:text-popcorn-red transition-colors">{link.quality}</span>
+                          </td>
+                          <td className="px-8 py-6">
+                            <span className="text-xs font-bold text-popcorn-secondary">{link.size || '--'}</span>
+                          </td>
+                          <td className="px-8 py-6 text-right">
+                            <Link 
+                              href={`/download/${movie.slug}/${link.slug}`}
+                              className="inline-flex items-center space-x-2 bg-popcorn-red text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-popcorn-red transition-all shadow-lg shadow-popcorn-red/20 active:scale-95"
+                            >
+                               <span>Download</span>
+                               <span className="text-xs">▶</span>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="p-6 bg-black/20">
+                   <AdUnit type="sidebar" position="movie_sidebar_top" />
                 </div>
              </section>
            )}

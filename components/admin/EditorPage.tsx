@@ -199,16 +199,16 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   }
 
   const addDownloadRow = () => {
-    setDownloadLinks([...downloadLinks, { label: '', url: '', slug: '', quality: '' }])
+    setDownloadLinks([...downloadLinks, { label: '', slug: '', quality: '1080p', size: '', message_id: 0 }])
   }
 
-  const updateDownloadRow = (index: number, field: keyof DownloadLink, value: string) => {
+  const updateDownloadRow = (index: number, field: keyof DownloadLink, value: any) => {
     const newLinks = [...downloadLinks]
     const updatedLink = { ...newLinks[index], [field]: value }
     
-    // Auto-generate slug from label if slug is empty
-    if (field === 'label' && !updatedLink.slug) {
-      updatedLink.slug = slugify(value)
+    // Auto-generate slug from post slug + quality
+    if (field === 'quality') {
+      updatedLink.slug = `${slug}-${value}`
     }
     
     newLinks[index] = updatedLink
@@ -402,40 +402,58 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
               {downloadLinks.map((link, i) => (
                 <div key={i} className="flex gap-2 p-4 bg-black/50 rounded-xl border border-white/5 relative group animate-in fade-in slide-in-from-top-1">
                    <div className="flex flex-col gap-3 w-full">
-                       <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1">
-                            <label className="text-[10px] uppercase font-black text-neutral-600">Label</label>
-                            <input 
-                              placeholder="e.g. 1080p MEGA"
-                              value={link.label}
-                              onChange={(e) => updateDownloadRow(i, 'label', e.target.value)}
-                              className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] uppercase font-black text-neutral-600">Quality</label>
-                            <input 
-                              placeholder="e.g. 1080p"
-                              value={link.quality || ''}
-                              onChange={(e) => updateDownloadRow(i, 'quality', e.target.value)}
-                              className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
-                            />
-                          </div>
-                       </div>
-                       <div className="space-y-1">
-                         <label className="text-[10px] uppercase font-black text-neutral-600">URL</label>
-                         <input 
-                           placeholder="https://..."
-                           value={link.url}
-                           onChange={(e) => updateDownloadRow(i, 'url', e.target.value)}
-                           className="w-full bg-transparent border-b border-white/5 text-[10px] text-popcorn-secondary focus:outline-none focus:text-white font-mono py-1"
-                         />
-                       </div>
-                       <div className="space-y-1">
-                         <label className="text-[10px] uppercase font-black text-neutral-600">Link Slug (Auto-generated)</label>
-                         <input 
-                           placeholder="batman-1080p"
-                           value={link.slug || ''}
+                        <div className="grid grid-cols-2 gap-3">
+                           <div className="space-y-1">
+                             <label className="text-[10px] uppercase font-black text-neutral-600">Label</label>
+                             <input 
+                               placeholder="e.g. 1080p MEGA"
+                               value={link.label}
+                               onChange={(e) => updateDownloadRow(i, 'label', e.target.value)}
+                               className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
+                             />
+                           </div>
+                           <div className="space-y-1">
+                             <label className="text-[10px] uppercase font-black text-neutral-600">Quality</label>
+                             <select 
+                               value={link.quality}
+                               onChange={(e) => updateDownloadRow(i, 'quality', e.target.value)}
+                               className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
+                             >
+                               <option value="2160p">2160p</option>
+                               <option value="1080p">1080p</option>
+                               <option value="720p">720p</option>
+                               <option value="480p">480p</option>
+                               <option value="360p">360p</option>
+                             </select>
+                           </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                           <div className="space-y-1">
+                             <label className="text-[10px] uppercase font-black text-neutral-600">File Size</label>
+                             <input 
+                               placeholder="e.g. 2.1 GB"
+                               value={link.size || ''}
+                               onChange={(e) => updateDownloadRow(i, 'size', e.target.value)}
+                               className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
+                             />
+                           </div>
+                           <div className="space-y-1">
+                             <label className="text-[10px] uppercase font-black text-neutral-600">Telegram Msg ID</label>
+                             <input 
+                               type="number"
+                               placeholder="e.g. 42"
+                               value={link.message_id || ''}
+                               onChange={(e) => updateDownloadRow(i, 'message_id', parseInt(e.target.value) || 0)}
+                               className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
+                             />
+                             <p className="text-[8px] text-neutral-600 italic">The number at the end of the file link</p>
+                           </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] uppercase font-black text-neutral-600">Link Slug (Auto-generated)</label>
+                          <input 
+                            placeholder="batman-1080p"
+                            value={link.slug || ''}
                            onChange={(e) => updateDownloadRow(i, 'slug', e.target.value)}
                            className="w-full bg-transparent border-none text-[10px] text-neutral-500 focus:outline-none focus:text-white font-mono"
                          />

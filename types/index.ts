@@ -7,7 +7,9 @@ export type DownloadLink = {
   label: string;
   url?: string;
   slug: string;
-  quality?: string;
+  quality: string;
+  size?: string;
+  message_id?: number;
 };
 
 export type Post = {
