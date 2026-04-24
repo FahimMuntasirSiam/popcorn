@@ -26,24 +26,27 @@ export default function Home() {
       const { data: trendingData } = await supabase
         .from('posts')
         .select('*')
-        .in('category', ['review', 'movie-blog'])
+        .in('category', ['review', 'movie-blog', 'movies', 'blogs'])
         .eq('status', 'published')
+        .order('created_at', { ascending: false })
         .limit(10)
       
       // Fetch Trailers
       const { data: trailersData } = await supabase
         .from('posts')
         .select('*')
-        .eq('category', 'trailer')
+        .in('category', ['trailer', 'trailers'])
         .eq('status', 'published')
+        .order('created_at', { ascending: false })
         .limit(10)
       
       // Fetch Latest Blogs
       const { data: blogData } = await supabase
         .from('posts')
         .select('*')
-        .eq('category', 'movie-news')
+        .in('category', ['movie-news', 'blogs', 'movie-blog'])
         .eq('status', 'published')
+        .order('created_at', { ascending: false })
         .limit(6)
 
       setTrending(trendingData || [])
