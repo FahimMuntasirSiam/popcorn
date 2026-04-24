@@ -82,7 +82,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Movies', href: '/category/movies' },
-    { name: 'Blog', href: '/category/blog' },
+    { name: 'Blogs', href: '/category/blogs' },
     { name: 'Trailers', href: '/category/trailers' },
   ]
 

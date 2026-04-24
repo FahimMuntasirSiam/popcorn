@@ -49,8 +49,10 @@ export default async function CategoryPage({
   const languages = Array.from(new Set(allPosts?.map(p => p.language_tag).filter(Boolean)))
   const genres = Array.from(new Set(allPosts?.map(p => p.genre).filter(Boolean)))
 
+  const isPrimaryCategory = ['movies', 'blogs', 'trailers'].includes(category)
+
   if (error || !posts || posts.length === 0) {
-     if (!lang && !genre) {
+     if (!lang && !genre && !isPrimaryCategory) {
        notFound()
      }
   }
