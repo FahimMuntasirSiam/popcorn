@@ -170,10 +170,12 @@ export default async function MovieDetailPage({
                 <div className="h-1 flex-1 bg-gradient-to-r from-popcorn-red/50 to-transparent rounded-full" />
              </div>
              {movie.content ? (
-               <div 
-                 className="text-gray-400 leading-relaxed text-lg font-medium prose prose-invert prose-red max-w-none prose-headings:text-white prose-headings:font-black prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-400 prose-strong:text-white prose-em:text-gray-300 prose-a:text-popcorn-red prose-blockquote:border-popcorn-red prose-blockquote:text-gray-500"
-                 dangerouslySetInnerHTML={{ __html: movie.content }}
-               />
+               <div className="break-words overflow-hidden">
+                <div 
+                  className="text-gray-400 leading-relaxed text-lg font-medium prose prose-invert prose-red max-w-none prose-headings:text-white prose-headings:font-black prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-400 prose-strong:text-white prose-em:text-gray-300 prose-a:text-popcorn-red prose-blockquote:border-popcorn-red prose-blockquote:text-gray-500"
+                  dangerouslySetInnerHTML={{ __html: movie.content }}
+                />
+               </div>
              ) : (
                <p className="text-gray-400 leading-relaxed text-xl font-medium">
                  {movie.meta_description}
@@ -233,7 +235,7 @@ export default async function MovieDetailPage({
                           </td>
                           <td className="px-8 py-6 text-right">
                             <Link 
-                              href={`/download/${movie.slug}/${link.slug}`}
+                              href={`/download/${movie.slug}/${link.slug || `${movie.slug}-${link.quality}`}`}
                               className="inline-flex items-center space-x-2 bg-popcorn-red text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-popcorn-red transition-all shadow-lg shadow-popcorn-red/20 active:scale-95"
                             >
                                <span>Download</span>
