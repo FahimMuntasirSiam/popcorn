@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import DownloadGateClient from './DownloadGateClient'
+import DownloadGateClient from '@/app/(public)/download/[slug]/[linkSlug]/DownloadGateClient'
 import MovieCard from '@/components/cards/MovieCard'
 
 export default async function DownloadGatePage({ 
   params 
 }: { 
-  params: { postSlug: string, linkSlug: string } 
+  params: { slug: string, linkSlug: string } 
 }) {
   const supabase = createClient()
   
@@ -14,7 +14,7 @@ export default async function DownloadGatePage({
   const { data: post } = await supabase
     .from('posts')
     .select('*')
-    .eq('slug', params.postSlug)
+    .eq('slug', params.slug)
     .single()
 
   if (!post) notFound()
@@ -40,7 +40,7 @@ export default async function DownloadGatePage({
         <DownloadGateClient 
           post={post} 
           link={link} 
-          postSlug={params.postSlug} 
+          slug={params.slug} 
           linkSlug={params.linkSlug} 
         />
 

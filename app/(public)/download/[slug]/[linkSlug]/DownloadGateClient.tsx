@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { Loader2, ArrowLeft } from 'lucide-react'
+import { Loader2, ArrowLeft, X } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Post, DownloadLink } from '@/types'
@@ -10,11 +10,11 @@ import { Post, DownloadLink } from '@/types'
 interface DownloadGateClientProps {
   post: Post;
   link: DownloadLink;
-  postSlug: string;
+  slug: string;
   linkSlug: string;
 }
 
-export default function DownloadGateClient({ post, link, postSlug, linkSlug }: DownloadGateClientProps) {
+export default function DownloadGateClient({ post, link, slug, linkSlug }: DownloadGateClientProps) {
   const [timeLeft, setTimeLeft] = useState(15)
   const [isCountingDown, setIsCountingDown] = useState(true)
   const [isReady, setIsReady] = useState(false)
@@ -26,7 +26,6 @@ export default function DownloadGateClient({ post, link, postSlug, linkSlug }: D
   const timerRef = useRef<NodeJS.Timeout>()
 
   useEffect(() => {
-    // Generate a random session token
     setToken(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15))
 
     timerRef.current = setInterval(() => {
@@ -53,7 +52,7 @@ export default function DownloadGateClient({ post, link, postSlug, linkSlug }: D
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          postSlug,
+          postSlug: slug,
           linkSlug,
           token,
           timestamp: startTime
@@ -74,14 +73,13 @@ export default function DownloadGateClient({ post, link, postSlug, linkSlug }: D
     }
   }
 
-  // SVG Circle Constants
   const radius = 60
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (timeLeft / 15) * circumference
 
   if (error) {
     return (
-      <div className="bg-popcorn-card border border-white/5 rounded-[2rem] p-10 text-center space-y-6 animate-in zoom-in-95 duration-300">
+      <div className="bg-popcorn-card border border-white/5 rounded-[2rem] p-10 text-center space-y-6">
         <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto">
           <X className="text-red-500" size={40} />
         </div>
@@ -90,7 +88,7 @@ export default function DownloadGateClient({ post, link, postSlug, linkSlug }: D
            <p className="text-sm text-popcorn-secondary">{error}</p>
         </div>
         <Link 
-          href={`/movies/${postSlug}`}
+          href={`/movies/${slug}`}
           className="inline-flex items-center space-x-2 text-xs font-black uppercase tracking-widest text-white bg-white/5 px-6 py-3 rounded-xl border border-white/10 hover:bg-white/10 transition-all"
         >
           <ArrowLeft size={14} />
@@ -101,8 +99,7 @@ export default function DownloadGateClient({ post, link, postSlug, linkSlug }: D
   }
 
   return (
-    <div className="bg-popcorn-card border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
-      {/* Header Info */}
+    <div className="bg-popcorn-card border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
       <div className="p-8 pb-4 space-y-6 text-center">
         <div className="relative w-32 h-44 mx-auto rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
           {post.cover_image && (
@@ -131,7 +128,6 @@ export default function DownloadGateClient({ post, link, postSlug, linkSlug }: D
         </div>
       </div>
 
-      {/* Main Countdown / Ad Area */}
       <div className="p-8 pt-4 space-y-8">
         <div className="relative flex items-center justify-center h-48">
           {isCountingDown ? (
@@ -194,11 +190,7 @@ export default function DownloadGateClient({ post, link, postSlug, linkSlug }: D
            </p>
         </div>
 
-        {/* Ad Placeholder */}
-        <div className={cn(
-          "transition-all duration-700",
-          isReady ? "opacity-0 scale-95 pointer-events-none absolute invisible" : "opacity-100 scale-100"
-        )}>
+        {!isReady && (
           <div 
             id="ad-download-gate" 
             data-position="download-gate"
@@ -218,28 +210,8 @@ export default function DownloadGateClient({ post, link, postSlug, linkSlug }: D
               Advertisement
             </span>
           </div>
-        </div>
+        )}
       </div>
     </div>
-  )
-}
-
-function X(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
   )
 }
