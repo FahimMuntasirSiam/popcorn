@@ -257,17 +257,17 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
            
            <div className="space-y-3">
              <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider">Cover Image</label>
-             <div className="relative group aspect-[2/3] bg-black/40 rounded-xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-popcorn-red group">
+             <div className="relative group min-h-[200px] bg-black/40 rounded-xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-popcorn-red group">
                {coverImage ? (
-                  <>
-                    <Image src={coverImage} alt="Cover" fill className="object-cover transition-transform group-hover:scale-105" />
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img src={coverImage} alt="Cover" className="max-w-full max-h-[500px] object-contain transition-transform group-hover:scale-105" />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                        <label className="cursor-pointer bg-white text-black text-[10px] font-black px-6 py-3 rounded-full uppercase tracking-widest hover:scale-110 transition-transform">
                          Change Cover
                          <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
                        </label>
                     </div>
-                  </>
+                  </div>
                ) : (
                   <label className="cursor-pointer flex flex-col items-center text-popcorn-secondary hover:text-white transition-all hover:scale-110">
                     <Upload size={32} className="mb-2" />

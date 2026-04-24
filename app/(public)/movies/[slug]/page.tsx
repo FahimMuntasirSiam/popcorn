@@ -99,13 +99,12 @@ export default async function MovieDetailPage({
         </div>
 
         <div className="relative h-full max-w-7xl mx-auto px-4 pt-20 flex flex-col md:flex-row items-end pb-12 gap-8">
-          <div className="relative w-48 md:w-64 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border-2 border-white/10 shrink-0 transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+          <div className="relative w-48 md:w-64 rounded-xl overflow-hidden shadow-2xl border-2 border-white/10 shrink-0 transform -rotate-2 hover:rotate-0 transition-transform duration-500">
             {movie.cover_image && (
-                <Image
+                <img
                   src={movie.cover_image}
                   alt={movie.title}
-                  fill
-                  className="object-cover"
+                  className="w-full h-auto"
                 />
             )}
           </div>
