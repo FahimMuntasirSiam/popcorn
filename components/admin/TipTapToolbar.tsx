@@ -6,6 +6,7 @@ import {
   Italic, 
   Underline, 
   Strikethrough, 
+  Heading1,
   Heading2, 
   Heading3, 
   Languages, 
@@ -83,7 +84,14 @@ export default function TipTapToolbar({ editor }: ToolbarProps) {
 
   return (
     <div className="bg-popcorn-card border border-white/5 p-2 rounded-t-xl flex flex-wrap items-center gap-1 sticky top-0 z-20 backdrop-blur-sm bg-opacity-90">
-      {/* [H2] [H3] */}
+      {/* [H1] [H2] [H3] */}
+      <Button 
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        isActive={editor.isActive('heading', { level: 1 })}
+        title="Heading 1"
+      >
+        <Heading1 size={18} />
+      </Button>
       <Button 
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         isActive={editor.isActive('heading', { level: 2 })}

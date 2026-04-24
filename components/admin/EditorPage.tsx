@@ -62,7 +62,11 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
     immediatelyRender: false,
     extensions: [
       StarterKit.configure({
-        history: true,
+        heading: {
+          levels: [1, 2, 3],
+        },
+        link: false,
+        underline: false,
       }),
       Underline,
       Link.configure({ 

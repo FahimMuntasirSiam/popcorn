@@ -165,9 +165,16 @@ export default async function MovieDetailPage({
                 <h2 className="text-3xl font-black uppercase tracking-tight">Storyline</h2>
                 <div className="h-1 flex-1 bg-gradient-to-r from-popcorn-red/50 to-transparent rounded-full" />
              </div>
-             <p className="text-gray-400 leading-relaxed text-xl font-medium">
-               {movie.content || movie.meta_description}
-             </p>
+             {movie.content ? (
+               <div 
+                 className="text-gray-400 leading-relaxed text-lg font-medium prose prose-invert prose-red max-w-none prose-headings:text-white prose-headings:font-black prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-400 prose-strong:text-white prose-em:text-gray-300 prose-a:text-popcorn-red prose-blockquote:border-popcorn-red prose-blockquote:text-gray-500"
+                 dangerouslySetInnerHTML={{ __html: movie.content }}
+               />
+             ) : (
+               <p className="text-gray-400 leading-relaxed text-xl font-medium">
+                 {movie.meta_description}
+               </p>
+             )}
           </section>
 
           {/* Trailer */}
@@ -215,8 +222,6 @@ export default async function MovieDetailPage({
                 </div>
              </section>
            )}
-
-           <section className="bg-popcorn-card p-6 rounded-xl border border-white/5 space-y-4 text-sm">
 
            <section className="bg-popcorn-card p-6 rounded-xl border border-white/5 space-y-4 text-sm">
               <h3 className="font-bold text-white uppercase tracking-wider text-xs">Details</h3>
