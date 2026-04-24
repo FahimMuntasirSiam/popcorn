@@ -26,6 +26,7 @@ export type Post = {
   download_links: DownloadLink[];
   status: PostStatus;
   word_count: number;
+  is_featured: boolean;
   avg_rating?: number;
   total_reviews?: number;
   created_at: string;

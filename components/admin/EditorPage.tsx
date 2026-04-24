@@ -54,6 +54,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const [downloadLinks, setDownloadLinks] = useState<DownloadLink[]>(initialData?.download_links || [])
   const [coverImage, setCoverImage] = useState(initialData?.cover_image || '')
   
+  const [isFeatured, setIsFeatured] = useState(initialData?.is_featured || false)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [wordCount, setWordCount] = useState(0)
@@ -132,6 +133,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
       download_links: downloadLinks,
       cover_image: coverImage,
       word_count: wordCount,
+      is_featured: isFeatured,
       updated_at: new Date().toISOString()
     }
 
