@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { 
   FileText, 
   CheckCircle, 
@@ -26,10 +26,7 @@ export default function AdminDashboard() {
   })
   const [recentPosts, setRecentPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createClient()
 
   async function fetchDashboardData() {
     setLoading(true)

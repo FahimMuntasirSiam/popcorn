@@ -22,7 +22,7 @@ import {
   Loader2,
   ChevronRight
 } from 'lucide-react'
-import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { slugify } from '@/lib/slugify'
@@ -37,10 +37,7 @@ interface EditorPageProps {
 
 export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const router = useRouter()
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createClient()
 
   // Form State
   const [title, setTitle] = useState(initialData?.title || '')
@@ -201,23 +198,15 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   }
 
   const addDownloadRow = () => {
-    setDownloadLinks([...downloadLinks, { label: '', slug: '', quality: '1080p', size: '', message_id: 0 }])
+    setDownloadLinks([...downloadLinks, { label: '', slug: '', quality: '1080p', size: '', telegram_url: '' }])
   }
 
   const updateDownloadRow = (index: number, field: any, value: any) => {
     const newLinks = [...downloadLinks]
     const updatedLink = { ...newLinks[index] }
     
-    if (field === 'telegram_link') {
-      // Extract message ID from links like https://t.me/c/12345/42 or https://t.me/channel/42
-      const match = value.match(/\/(\d+)$/)
-      if (match) {
-        updatedLink.message_id = parseInt(match[1])
-      }
-      (updatedLink as any).telegram_link = value
-    } else {
-      (updatedLink as any)[field] = value
-    }
+    // @ts-ignore
+    updatedLink[field] = value
     
     // Auto-generate slug from post slug + quality
     if (field === 'quality' || field === 'label') {
@@ -451,18 +440,14 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                              />
                            </div>
                            <div className="space-y-1">
-                             <label className="text-[10px] uppercase font-black text-neutral-600">Telegram Link</label>
+                             <label className="text-[10px] uppercase font-black text-neutral-600">Telegram URL</label>
                              <input 
-                               placeholder="https://t.me/c/..."
-                               value={(link as any).telegram_link || ''}
-                               onChange={(e) => updateDownloadRow(i, 'telegram_link', e.target.value)}
+                               placeholder="https://t.me/c/xxxxxxxxxx/xx"
+                               value={link.telegram_url || ''}
+                               onChange={(e) => updateDownloadRow(i, 'telegram_url', e.target.value)}
                                className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
                              />
-                             {link.message_id ? (
-                               <p className="text-[8px] text-green-500 font-bold uppercase tracking-widest mt-1">✓ ID Detected: {link.message_id}</p>
-                             ) : (
-                               <p className="text-[8px] text-neutral-600 italic mt-1">Paste the Telegram message link</p>
-                             )}
+                             <p className="text-[8px] text-neutral-600 italic mt-1">Paste the full Telegram message link here</p>
                            </div>
                         </div>
                    </div>

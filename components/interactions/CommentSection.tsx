@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { MessageSquare, Send, Trash2, Loader2, User as UserIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
@@ -20,10 +20,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const [submitting, setSubmitting] = useState(false)
   const [user, setUser] = useState<any>(null)
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createClient()
 
   const ADMIN_EMAILS = ['admin@popcorn.com', 'owner@popcorn.com'] // Define admins here
 

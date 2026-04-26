@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { 
   MessageSquare, 
   Trash2, 
@@ -20,10 +20,7 @@ export default function AdminCommentsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createClient()
 
   const fetchComments = async () => {
     setLoading(true)

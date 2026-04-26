@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import DownloadGateClient from '@/app/(public)/download/[slug]/[linkSlug]/DownloadGateClient'
 import MovieCard from '@/components/cards/MovieCard'
 
@@ -23,6 +23,14 @@ export default async function DownloadGatePage({
   const link = post.download_links?.find((l: any) => l.slug === params.linkSlug)
   if (!link) notFound()
 
+  // Sanitize link for client
+  const sanitizedLink = {
+    label: link.label,
+    quality: link.quality,
+    size: link.size,
+    slug: link.slug
+  }
+
   // Fetch recommendations (same language, excluding current)
   const { data: recommendations } = await supabase
     .from('posts')
@@ -39,7 +47,7 @@ export default async function DownloadGatePage({
         {/* The interactive countdown and download logic */}
         <DownloadGateClient 
           post={post} 
-          link={link} 
+          link={sanitizedLink as any} 
           slug={params.slug} 
           linkSlug={params.linkSlug} 
         />

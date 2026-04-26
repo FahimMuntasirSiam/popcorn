@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X, ChevronDown, User as UserIcon, LogOut, Settings, Search } from 'lucide-react'
-import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { User } from '@supabase/supabase-js'
@@ -14,10 +14,7 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
   const [lang, setLang] = useState<'EN' | 'BN'>('EN')
   
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createClient()
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
 

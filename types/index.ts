@@ -5,11 +5,10 @@ export type PostStatus = 'draft' | 'published';
 
 export type DownloadLink = {
   label: string;
-  url?: string;
   slug: string;
   quality: string;
   size?: string;
-  message_id?: number;
+  telegram_url: string;
 };
 
 export type Post = {
