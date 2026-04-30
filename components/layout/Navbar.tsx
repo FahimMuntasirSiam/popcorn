@@ -84,9 +84,9 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Movies', href: '/category/movies' },
-    { name: 'Blogs', href: '/category/blogs' },
-    { name: 'Trailers', href: '/category/trailers' },
+    { name: 'Movies', href: '/movies' },
+    { name: 'Blogs', href: '/blogs' },
+    { name: 'Trailers', href: '/trailers' },
   ]
 
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0]

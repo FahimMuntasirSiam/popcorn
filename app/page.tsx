@@ -45,7 +45,7 @@ export default function Home() {
       const { data: moviesData } = await supabase
         .from('posts')
         .select('*')
-        .in('category', ['movies', 'review'])
+        .eq('category', 'movies')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(10)
@@ -54,7 +54,7 @@ export default function Home() {
       const { data: blogData } = await supabase
         .from('posts')
         .select('*')
-        .in('category', ['blogs', 'movie-blog', 'movie-news'])
+        .eq('category', 'blogs')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(10)
@@ -63,7 +63,7 @@ export default function Home() {
       const { data: trailersData } = await supabase
         .from('posts')
         .select('*')
-        .in('category', ['trailers', 'trailer'])
+        .eq('category', 'trailers')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(10)
@@ -102,7 +102,7 @@ export default function Home() {
            </div>
            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {latest.map(post => (
-                ['blogs', 'movie-blog', 'movie-news'].includes(post.category) ? (
+                post.category === 'blogs' ? (
                   <BlogCard key={post.id} post={post} />
                 ) : (
                   <MovieCard key={post.id} movie={post} />
@@ -150,14 +150,14 @@ export default function Home() {
         <MovieRow 
           title="Trending Movies" 
           movies={movies} 
-          viewMoreLink="/category/movies"
+          viewMoreLink="/movies"
         />
 
         {/* Blogs Section */}
         <MovieRow 
           title="Latest Blog Posts" 
           movies={blogs} 
-          viewMoreLink="/category/blogs"
+          viewMoreLink="/blogs"
           isBlog
         />
 
@@ -200,7 +200,7 @@ export default function Home() {
         <MovieRow 
           title="Trailers & Teasers" 
           movies={trailers} 
-          viewMoreLink="/category/trailers"
+          viewMoreLink="/trailers"
         />
       </div>
     </div>

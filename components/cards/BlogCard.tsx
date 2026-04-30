@@ -10,7 +10,7 @@ interface BlogCardProps {
 
 export default function BlogCard({ post }: BlogCardProps) {
   return (
-    <Link href={`/blog/${post.slug}`} className="group block h-full">
+    <Link href={`/blogs/${post.slug}`} className="group block h-full">
       <div className="bg-popcorn-card/40 backdrop-blur-md rounded-[2rem] overflow-hidden transition-all duration-500 hover:translate-y-[-8px] hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)] border border-white/5 h-full flex flex-col">
         {/* Image Container */}
         <div className="relative aspect-[16/10] overflow-hidden">

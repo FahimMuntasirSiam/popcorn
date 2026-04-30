@@ -98,40 +98,51 @@ export default function AllPostsPage() {
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-popcorn-secondary" size={18} />
-          <input 
-            type="text"
-            placeholder="Search by title..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-popcorn-card border border-white/5 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-popcorn-red transition-all"
-          />
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          {[
+            { id: 'all', label: 'All Content' },
+            { id: 'movies', label: 'Movies' },
+            { id: 'blogs', label: 'Blogs' },
+            { id: 'trailers', label: 'Trailers' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setCategoryFilter(tab.id as any)}
+              className={cn(
+                "px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all border",
+                categoryFilter === tab.id 
+                  ? "bg-popcorn-red border-popcorn-red text-white shadow-lg shadow-popcorn-red/20" 
+                  : "bg-white/5 border-white/10 text-popcorn-secondary hover:text-white hover:bg-white/10"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
-        
-        <select 
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as PostStatus | 'all')}
-          className="bg-popcorn-card border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-popcorn-red"
-        >
-          <option value="all">All Status</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-        </select>
 
-        <select 
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value as PostCategory | 'all')}
-          className="bg-popcorn-card border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-popcorn-red"
-        >
-          <option value="all">All Categories</option>
-          <option value="movie-blog">Movie Blog</option>
-          <option value="movie-news">Movie News</option>
-          <option value="trailer">Trailer</option>
-          <option value="teaser">Teaser</option>
-          <option value="review">Review</option>
-        </select>
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-popcorn-secondary" size={18} />
+            <input 
+              type="text"
+              placeholder="Search by title..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-popcorn-card border border-white/5 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-popcorn-red transition-all"
+            />
+          </div>
+          
+          <select 
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as PostStatus | 'all')}
+            className="bg-popcorn-card border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-popcorn-red"
+          >
+            <option value="all">All Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
       </div>
 
       {/* Posts Table */}
@@ -193,7 +204,7 @@ export default function AllPostsPage() {
                         </button>
                         <Link 
                           target="_blank"
-                          href={`/${['blogs', 'movie-blog', 'movie-news'].includes(post.category) ? 'blog' : 'movies'}/${post.slug}`}
+                          href={`/${post.category}/${post.slug}`}
                           className="p-2 text-popcorn-secondary hover:text-blue-500 transition-colors"
                           title="View Live"
                         >

@@ -37,7 +37,7 @@ export default function FilterBar({ languages, genres, currentLang, currentGenre
 
         {activeCount > 0 && (
           <Link 
-            href={`/category/${title}`}
+            href={`/${title}`}
             className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-popcorn-secondary hover:text-white transition-all bg-white/5 px-4 py-3 rounded-2xl border border-white/10"
           >
             <X size={12} />
@@ -61,7 +61,7 @@ export default function FilterBar({ languages, genres, currentLang, currentGenre
                   {languages.length > 0 ? languages.map(l => (
                     <Link
                       key={l}
-                      href={`/category/${title}?lang=${l}${currentGenre ? `&genre=${currentGenre}` : ''}`}
+                      href={`/${title}?lang=${l}${currentGenre ? `&genre=${currentGenre}` : ''}`}
                       onClick={() => setIsOpen(false)}
                       className={cn(
                         "px-4 py-2 rounded-xl text-[10px] font-black transition-all border flex items-center space-x-2",
@@ -86,7 +86,7 @@ export default function FilterBar({ languages, genres, currentLang, currentGenre
                   {genres.length > 0 ? genres.map(g => (
                     <Link
                       key={g}
-                      href={`/category/${title}?genre=${g}${currentLang ? `&lang=${currentLang}` : ''}`}
+                      href={`/${title}?genre=${g}${currentLang ? `&lang=${currentLang}` : ''}`}
                       onClick={() => setIsOpen(false)}
                       className={cn(
                         "px-4 py-2 rounded-xl text-[10px] font-black transition-all border flex items-center space-x-2",

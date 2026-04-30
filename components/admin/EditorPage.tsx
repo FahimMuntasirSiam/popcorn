@@ -329,7 +329,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                    <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider text-[10px]">Category</label>
                    <select 
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => setCategory(e.target.value as PostCategory)}
                     className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-popcorn-red"
                    >
                      <option value="movies">Movies</option>

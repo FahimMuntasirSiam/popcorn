@@ -1,4 +1,4 @@
-export type PostCategory = string;
+export type PostCategory = 'movies' | 'blogs' | 'trailers';
 export type LanguageTag = string;
 
 export type PostStatus = 'draft' | 'published';
