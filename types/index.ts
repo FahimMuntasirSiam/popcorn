@@ -8,7 +8,7 @@ export type DownloadLink = {
   slug: string;
   quality: string;
   size?: string;
-  telegram_url: string;
+  download_url: string;
 };
 
 export type Post = {

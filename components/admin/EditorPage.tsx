@@ -198,7 +198,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   }
 
   const addDownloadRow = () => {
-    setDownloadLinks([...downloadLinks, { label: '', slug: '', quality: '1080p', size: '', telegram_url: '' }])
+    setDownloadLinks([...downloadLinks, { label: '', slug: '', quality: '1080p', size: '', download_url: '' }])
   }
 
   const updateDownloadRow = (index: number, field: any, value: any) => {
@@ -440,14 +440,14 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                              />
                            </div>
                            <div className="space-y-1">
-                             <label className="text-[10px] uppercase font-black text-neutral-600">Telegram URL</label>
+                             <label className="text-[10px] uppercase font-black text-neutral-600">Download URL</label>
                              <input 
-                               placeholder="https://t.me/c/xxxxxxxxxx/xx"
-                               value={link.telegram_url || ''}
-                               onChange={(e) => updateDownloadRow(i, 'telegram_url', e.target.value)}
+                               placeholder="Paste any download link (MEGA, Telegram, Google Drive...)"
+                               value={link.download_url || ''}
+                               onChange={(e) => updateDownloadRow(i, 'download_url', e.target.value)}
                                className="w-full bg-transparent border-b border-white/5 text-xs font-bold text-white focus:outline-none focus:border-popcorn-red py-1"
                              />
-                             <p className="text-[8px] text-neutral-600 italic mt-1">Paste the full Telegram message link here</p>
+                             <p className="text-[8px] text-neutral-600 italic mt-1">Supports MEGA, Telegram, Google Drive or any direct link</p>
                            </div>
                         </div>
                    </div>

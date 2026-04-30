@@ -47,11 +47,11 @@ export async function POST(req: NextRequest) {
     const downloadLinks = post.download_links as any[]
     const link = downloadLinks?.find((l: any) => l.slug === linkSlug)
     
-    if (!link || !link.telegram_url) {
+    if (!link || !link.download_url) {
       return NextResponse.json({ error: 'Download link not configured' }, { status: 404 })
     }
 
-    const downloadUrl = link.telegram_url
+    const downloadUrl = link.download_url
 
     // 5. Log the download
     await supabase.from('downloads_log').insert({

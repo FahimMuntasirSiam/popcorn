@@ -23,6 +23,17 @@ export default async function DownloadGatePage({
   const link = post.download_links?.find((l: any) => l.slug === params.linkSlug)
   if (!link) notFound()
 
+  // Sanitize the entire post object's download links before sending to client
+  const sanitizedPost = {
+    ...post,
+    download_links: post.download_links?.map((l: any) => ({
+      label: l.label,
+      quality: l.quality,
+      size: l.size,
+      slug: l.slug
+    }))
+  }
+
   // Sanitize link for client
   const sanitizedLink = {
     label: link.label,
@@ -46,7 +57,7 @@ export default async function DownloadGatePage({
         
         {/* The interactive countdown and download logic */}
         <DownloadGateClient 
-          post={post} 
+          post={sanitizedPost as any} 
           link={sanitizedLink as any} 
           slug={params.slug} 
           linkSlug={params.linkSlug} 
