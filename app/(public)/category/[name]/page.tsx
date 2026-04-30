@@ -115,8 +115,39 @@ function CategoryView({
               )}
               
               {(index + 1) % 6 === 0 && (
-                <div className="col-span-full">
-                  <AdUnit type="banner" position={`category_${title}_after_${index + 1}`} />
+                <div className="col-span-full py-4">
+                  <AdUnit 
+                    className="hidden md:flex" 
+                    minHeight="90px"
+                    code={`
+                      <script type="text/javascript">
+                        atOptions = {
+                          'key' : '64530885a0cbc7ae0904c3e6dfc4c192',
+                          'format' : 'iframe',
+                          'height' : 90,
+                          'width' : 728,
+                          'params' : {}
+                        };
+                      </script>
+                      <script type="text/javascript" src="https://www.highperformanceformat.com/64530885a0cbc7ae0904c3e6dfc4c192/invoke.js"></script>
+                    `} 
+                  />
+                  <AdUnit 
+                    className="md:hidden flex" 
+                    minHeight="50px"
+                    code={`
+                      <script type="text/javascript">
+                        atOptions = {
+                          'key' : '2b58bfa05eeeaedde521d109142d97e3',
+                          'format' : 'iframe',
+                          'height' : 50,
+                          'width' : 320,
+                          'params' : {}
+                        };
+                      </script>
+                      <script type="text/javascript" src="https://www.highperformanceformat.com/2b58bfa05eeeaedde521d109142d97e3/invoke.js"></script>
+                    `} 
+                  />
                 </div>
               )}
             </React.Fragment>
