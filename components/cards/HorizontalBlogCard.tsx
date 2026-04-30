@@ -1,8 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Calendar, Clock } from 'lucide-react'
+import { Calendar, Clock, Star, ArrowRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { Post } from '@/types'
+import { cn } from '@/lib/utils'
 
 interface HorizontalBlogCardProps {
   post: Post;
@@ -10,57 +11,69 @@ interface HorizontalBlogCardProps {
 
 export default function HorizontalBlogCard({ post }: HorizontalBlogCardProps) {
   const readingTime = Math.ceil((post.word_count || 1) / 200)
+  const hasRating = (post.avg_rating || 0) > 0
 
   return (
     <Link href={`/blogs/${post.slug}`} className="group block w-full">
-      <div className="bg-popcorn-card/40 backdrop-blur-md rounded-[2.5rem] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/5 flex flex-col md:flex-row h-full md:h-72">
-        {/* Image Container */}
-        <div className="relative w-full md:w-2/5 h-64 md:h-full overflow-hidden shrink-0">
+      <div className="bg-[#141414] border border-[#222] rounded-xl overflow-hidden transition-all duration-300 group-hover:border-popcorn-red group-hover:shadow-[0_0_20px_rgba(229,9,20,0.15)] flex flex-col md:flex-row h-full md:h-[170px]">
+        {/* Image Container - LEFT */}
+        <div className="relative w-full md:w-[300px] h-[170px] shrink-0 bg-black">
           {post.cover_image ? (
             <Image
               src={post.cover_image}
               alt={post.title}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
-              sizes="(max-width: 768px) 100vw, 40vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="300px"
             />
           ) : (
             <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
-              <span className="text-gray-500 italic">No Image</span>
+              <span className="text-gray-700 text-xs italic">No Image</span>
             </div>
           )}
-          
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent opacity-60" />
         </div>
 
-        {/* Content */}
-        <div className="p-8 md:p-10 flex flex-col justify-center flex-1 space-y-4">
-          <div className="flex items-center space-x-4 text-[10px] font-black text-popcorn-secondary uppercase tracking-[0.2em]">
-             <div className="flex items-center space-x-1">
-               <Calendar size={12} className="text-popcorn-red" />
-               <span>{format(new Date(post.created_at), 'MMM dd, yyyy')}</span>
-             </div>
-             <span className="w-1 h-1 rounded-full bg-white/10" />
-             <div className="flex items-center space-x-1">
-               <Clock size={12} className="text-popcorn-red" />
-               <span>{readingTime} min read</span>
-             </div>
-          </div>
-          
-          <div className="space-y-3">
-            <h3 className="text-3xl md:text-4xl font-black text-white leading-tight line-clamp-2 group-hover:text-popcorn-red transition-colors italic uppercase tracking-tighter">
+        {/* Content - RIGHT */}
+        <div className="p-5 md:p-6 flex flex-col justify-between flex-1 overflow-hidden">
+          <div className="space-y-2">
+            <h3 className="text-[20px] font-bold text-white leading-tight line-clamp-1 group-hover:text-popcorn-red transition-colors italic !font-serif">
               {post.title}
             </h3>
             
-            <p className="text-popcorn-secondary text-sm line-clamp-2 leading-relaxed font-medium">
+            <div className="flex items-center space-x-3 text-[11px] font-bold tracking-wider">
+               <div className={cn("flex items-center space-x-1", hasRating ? "text-popcorn-gold" : "text-neutral-600")}>
+                  <Star size={12} fill={hasRating ? "currentColor" : "none"} />
+                  <span>{hasRating ? post.avg_rating?.toFixed(1) : 'Not rated'}</span>
+               </div>
+               <span className="text-neutral-700">•</span>
+               <div className="flex items-center space-x-1 text-neutral-500">
+                  <Calendar size={12} />
+                  <span>{format(new Date(post.created_at), 'MMM dd, yyyy')}</span>
+               </div>
+               <span className="text-neutral-700">•</span>
+               <div className="flex items-center space-x-1 text-neutral-500">
+                  <Clock size={12} />
+                  <span>{readingTime} min read</span>
+               </div>
+            </div>
+
+            <p className="text-neutral-500 text-[13px] line-clamp-2 leading-relaxed font-medium">
               {post.meta_description}
             </p>
           </div>
           
-          <div className="pt-6 flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-white group-hover:text-popcorn-red transition-colors">
-               <span>Read Full Story</span>
-               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+          <div className="flex items-center justify-between mt-auto pt-2">
+            <div className="flex flex-wrap gap-2">
+               {(post.genre?.split(',') || []).slice(0, 2).map((g: string) => (
+                 <span key={g} className="bg-popcorn-red/10 text-popcorn-red text-[9px] font-black uppercase px-2 py-0.5 rounded-full border border-popcorn-red/20">
+                   {g.trim()}
+                 </span>
+               ))}
+            </div>
+            
+            <div className="flex items-center space-x-1 text-[11px] font-black uppercase tracking-widest text-popcorn-red">
+               <span>Read More</span>
+               <ArrowRight size={14} />
             </div>
           </div>
         </div>

@@ -27,7 +27,7 @@ export default function TrailerCard({ post }: TrailerCardProps) {
               src={thumbnailUrl}
               alt={post.title}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-contain transition-transform duration-700 group-hover:scale-110"
             />
           )}
           <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center">

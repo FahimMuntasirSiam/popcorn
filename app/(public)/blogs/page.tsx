@@ -18,49 +18,54 @@ export default async function BlogsListingPage() {
     .eq('category', 'blogs')
     .order('created_at', { ascending: false })
 
-  return (
-    <div className="bg-popcorn-dark min-h-screen text-white pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto uppercase tracking-tighter">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-        <div className="flex items-center space-x-4 flex-1">
-          <h1 className="text-4xl md:text-6xl font-black italic">BLOGS</h1>
-          <div className="h-0.5 flex-1 bg-white/5" />
-        </div>
-      </div>
+  const count = posts?.length || 0
 
-      {posts && posts.length > 0 ? (
-        <div className="space-y-12">
-          {posts.map((post, index) => (
-            <React.Fragment key={post.id}>
-              <HorizontalBlogCard post={post} />
-              
-              {(index + 1) % 4 === 0 && (
-                <div className="py-4">
-                  <AdUnit 
-                    className="hidden md:flex" 
-                    minHeight="90px"
-                    code={`
-                      <script type="text/javascript">
-                        atOptions = {
-                          'key' : '64530885a0cbc7ae0904c3e6dfc4c192',
-                          'format' : 'iframe',
-                          'height' : 90,
-                          'width' : 728,
-                          'params' : {}
-                        };
-                      </script>
-                      <script type="text/javascript" src="https://www.highperformanceformat.com/64530885a0cbc7ae0904c3e6dfc4c192/invoke.js"></script>
-                    `} 
-                  />
-                </div>
-              )}
-            </React.Fragment>
-          ))}
+  return (
+    <div className="bg-popcorn-dark min-h-screen text-white pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[900px] mx-auto">
+        <div className="mb-10 space-y-2">
+          <div className="flex items-center space-x-4">
+             <div className="h-10 w-1.5 bg-popcorn-red rounded-full" />
+             <h1 className="text-4xl md:text-5xl font-black italic !font-serif tracking-tighter uppercase">BLOGS</h1>
+          </div>
+          <p className="text-neutral-500 text-sm font-bold ml-6 uppercase tracking-widest">{count} Articles</p>
         </div>
-      ) : (
-        <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-3xl">
-          <p className="text-xl font-bold text-popcorn-secondary">No blog posts found.</p>
-        </div>
-      )}
+
+        {posts && posts.length > 0 ? (
+          <div className="space-y-4">
+            {posts.map((post, index) => (
+              <React.Fragment key={post.id}>
+                <HorizontalBlogCard post={post} />
+                
+                {(index + 1) % 4 === 0 && (
+                  <div className="py-4">
+                    <AdUnit 
+                      className="hidden md:flex" 
+                      minHeight="90px"
+                      code={`
+                        <script type="text/javascript">
+                          atOptions = {
+                            'key' : '64530885a0cbc7ae0904c3e6dfc4c192',
+                            'format' : 'iframe',
+                            'height' : 90,
+                            'width' : 728,
+                            'params' : {}
+                          };
+                        </script>
+                        <script type="text/javascript" src="https://www.highperformanceformat.com/64530885a0cbc7ae0904c3e6dfc4c192/invoke.js"></script>
+                      `} 
+                    />
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        ) : (
+          <div className="py-24 text-center border-2 border-dashed border-white/5 rounded-[2rem] bg-white/2">
+            <p className="text-lg font-bold text-neutral-600 uppercase tracking-widest">No blogs published yet</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

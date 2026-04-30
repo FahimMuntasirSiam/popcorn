@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 
 interface AdUnitProps {
   code: string
@@ -31,45 +31,23 @@ class AdErrorBoundary extends React.Component<{ children: React.ReactNode }, { h
 }
 
 const AdUnitContent = ({ code, className, minHeight = '50px' }: AdUnitProps) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!containerRef.current) return
-
-    // Clear previous content
-    containerRef.current.innerHTML = ''
-
-    // Create a new div to hold the ad to avoid affecting the main container directly
-    const adContainer = document.createElement('div')
-    containerRef.current.appendChild(adContainer)
-
-    // Parse and execute scripts
-    const range = document.createRange()
-    const documentFragment = range.createContextualFragment(code)
-    
-    // Append the fragment (this will trigger script execution if using createContextualFragment)
-    adContainer.appendChild(documentFragment)
-
-    // For scripts that don't execute via fragment (some browsers/Next.js versions)
-    const scripts = adContainer.querySelectorAll('script')
-    scripts.forEach((oldScript) => {
-      const newScript = document.createElement('script')
-      Array.from(oldScript.attributes).forEach((attr) => {
-        newScript.setAttribute(attr.name, attr.value)
-      })
-      if (oldScript.innerHTML) {
-        newScript.innerHTML = oldScript.innerHTML
-      }
-      oldScript.parentNode?.replaceChild(newScript, oldScript)
-    })
-  }, [code])
-
   return (
     <div 
-      ref={containerRef} 
-      className={`flex justify-center items-center overflow-hidden ${className || ''}`}
+      className={`flex justify-center items-center overflow-hidden w-full ${className || ''}`}
       style={{ minHeight }}
-    />
+    >
+      <iframe
+        title="Advertisement"
+        style={{ width: '100%', height: '100%', border: 'none', minHeight }}
+        srcDoc={`
+          <html>
+            <body style="margin:0; padding:0; display:flex; justify-content:center; align-items:center; background:transparent;">
+              ${code}
+            </body>
+          </html>
+        `}
+      />
+    </div>
   )
 }
 
