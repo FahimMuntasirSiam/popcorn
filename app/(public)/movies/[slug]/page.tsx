@@ -141,6 +141,42 @@ export default async function MovieDetailPage({
         </div>
       </div>
 
+      {/* Top Banner Ad */}
+      <div className="max-w-7xl mx-auto px-4 pt-8">
+        <AdUnit 
+          className="hidden md:flex" 
+          minHeight="90px"
+          code={`
+            <script type="text/javascript">
+              atOptions = {
+                'key' : '64530885a0cbc7ae0904c3e6dfc4c192',
+                'format' : 'iframe',
+                'height' : 90,
+                'width' : 728,
+                'params' : {}
+              };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/64530885a0cbc7ae0904c3e6dfc4c192/invoke.js"></script>
+          `} 
+        />
+        <AdUnit 
+          className="md:hidden flex" 
+          minHeight="50px"
+          code={`
+            <script type="text/javascript">
+              atOptions = {
+                'key' : '2b58bfa05eeeaedde521d109142d97e3',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/2b58bfa05eeeaedde521d109142d97e3/invoke.js"></script>
+          `} 
+        />
+      </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-16">
@@ -200,7 +236,41 @@ export default async function MovieDetailPage({
           )}
 
           {/* Comments Section */}
-          <AdUnit type="banner" position="movie_after_trailer" />
+          {/* Post Trailer Ad */}
+          <div className="my-8">
+            <AdUnit 
+              className="hidden md:flex" 
+              minHeight="90px"
+              code={`
+                <script type="text/javascript">
+                  atOptions = {
+                    'key' : '64530885a0cbc7ae0904c3e6dfc4c192',
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                  };
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/64530885a0cbc7ae0904c3e6dfc4c192/invoke.js"></script>
+              `} 
+            />
+            <AdUnit 
+              className="md:hidden flex" 
+              minHeight="50px"
+              code={`
+                <script type="text/javascript">
+                  atOptions = {
+                    'key' : '2b58bfa05eeeaedde521d109142d97e3',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                  };
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/2b58bfa05eeeaedde521d109142d97e3/invoke.js"></script>
+              `} 
+            />
+          </div>
           <CommentSection postId={movie.id} />
         </div>
 
@@ -248,7 +318,11 @@ export default async function MovieDetailPage({
                   </table>
                 </div>
                 <div className="p-6 bg-black/20">
-                   <AdUnit type="sidebar" position="movie_sidebar_top" />
+                   <AdUnit 
+                    minHeight="250px"
+                    className="w-[300px] h-[250px] mx-auto bg-white/5 rounded-xl"
+                    code={`<script type="text/javascript" src="https://pl29300532.profitablecpmratenetwork.com/cb/84/86/cb84861c3dec1995f49a5b34cd3e2a06.js"></script>`}
+                   />
                 </div>
              </section>
            )}

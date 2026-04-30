@@ -6,6 +6,7 @@ import { Loader2, ArrowLeft, X } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Post, DownloadLink } from '@/types'
+import AdUnit from '@/components/ui/AdUnit'
 
 interface DownloadGateClientProps {
   post: Post;
@@ -191,25 +192,11 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
         </div>
 
         {!isReady && (
-          <div 
-            id="ad-download-gate" 
-            data-position="download-gate"
-            style={{
-              width: '300px', 
-              height: '250px', 
-              margin: '0 auto',
-              background: '#141414', 
-              border: '1px solid #222',
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              borderRadius: '24px'
-            }}
-          >
-            <span style={{ color: '#444', fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em' }}>
-              Advertisement
-            </span>
-          </div>
+          <AdUnit 
+            minHeight="250px"
+            className="w-[300px] h-[250px] mx-auto bg-[#141414] border border-[#222] rounded-[24px]"
+            code={`<script type="text/javascript" src="https://pl29300532.profitablecpmratenetwork.com/cb/84/86/cb84861c3dec1995f49a5b34cd3e2a06.js"></script>`}
+          />
         )}
       </div>
     </div>

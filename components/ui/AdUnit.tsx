@@ -1,42 +1,82 @@
-import React from 'react';
+'use client'
+
+import React, { useEffect, useRef } from 'react'
 
 interface AdUnitProps {
-  type: "banner" | "sidebar" | "interstitial" | "native";
-  position: string;
+  code: string
+  className?: string
+  minHeight?: string
 }
 
-const AdUnit = ({ type, position }: AdUnitProps) => {
-  // Define responsive classes based on type
-  const containerClasses = {
-    banner: "w-full min-h-[50px] md:min-h-[90px] flex items-center justify-center bg-white/5 border border-dashed border-white/10 my-8 rounded-xl overflow-hidden",
-    sidebar: "w-full min-h-[250px] flex items-center justify-center bg-white/5 border border-dashed border-white/10 rounded-xl overflow-hidden",
-    interstitial: "fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm",
-    native: "w-full p-4 bg-white/5 border border-white/10 rounded-2xl"
-  };
+class AdErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("AdUnit Error:", error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return null // Hide ads if they crash
+    }
+    return this.props.children
+  }
+}
+
+const AdUnitContent = ({ code, className, minHeight = '50px' }: AdUnitProps) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    // Clear previous content
+    containerRef.current.innerHTML = ''
+
+    // Create a new div to hold the ad to avoid affecting the main container directly
+    const adContainer = document.createElement('div')
+    containerRef.current.appendChild(adContainer)
+
+    // Parse and execute scripts
+    const range = document.createRange()
+    const documentFragment = range.createContextualFragment(code)
+    
+    // Append the fragment (this will trigger script execution if using createContextualFragment)
+    adContainer.appendChild(documentFragment)
+
+    // For scripts that don't execute via fragment (some browsers/Next.js versions)
+    const scripts = adContainer.querySelectorAll('script')
+    scripts.forEach((oldScript) => {
+      const newScript = document.createElement('script')
+      Array.from(oldScript.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value)
+      })
+      if (oldScript.innerHTML) {
+        newScript.innerHTML = oldScript.innerHTML
+      }
+      oldScript.parentNode?.replaceChild(newScript, oldScript)
+    })
+  }, [code])
 
   return (
-    <>
-      {/* ADSTERRA: Replace this div's contents with your ad code */}
-      <div 
-        data-ad-position={position} 
-        className={`${containerClasses[type]} ad-container transition-all hover:bg-white/10`}
-      >
-        <div className="flex flex-col items-center space-y-2 opacity-20">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em]">Advertisement</span>
-          <div className="text-[8px] border border-white/20 px-2 py-0.5 rounded uppercase">{type} • {position}</div>
-        </div>
-        
-        {/*
-          PASTE YOUR AD SCRIPT BELOW THIS COMMENT
-          EXAMPLE:
-          <script type="text/javascript">
-            atOptions = { 'key' : '...', 'format' : 'iframe', ... };
-            document.write('<scr' + 'ipt type="text/javascript" src="..."></scr' + 'ipt>');
-          </script>
-        */}
-      </div>
-    </>
-  );
-};
+    <div 
+      ref={containerRef} 
+      className={`flex justify-center items-center overflow-hidden ${className || ''}`}
+      style={{ minHeight }}
+    />
+  )
+}
 
-export default AdUnit;
+export default function AdUnit(props: AdUnitProps) {
+  return (
+    <AdErrorBoundary>
+      <AdUnitContent {...props} />
+    </AdErrorBoundary>
+  )
+}

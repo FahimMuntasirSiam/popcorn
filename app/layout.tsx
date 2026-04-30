@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description: "Your ultimate movie and blog destination.",
 };
 
+import GlobalAds from "@/components/interactions/GlobalAds";
 import Script from "next/script";
 
 export default function RootLayout({
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        <GlobalAds />
         {/* ADSTERRA SCRIPT: Paste your site verification script here */}
         {/* ADSENSE SCRIPT: Paste your AdSense script here */}
         <style>{`

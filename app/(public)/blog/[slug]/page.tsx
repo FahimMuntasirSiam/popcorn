@@ -148,6 +148,42 @@ export default async function BlogPostPage({
         </div>
       </div>
 
+      {/* Top Banner Ad */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-8">
+        <AdUnit 
+          className="hidden md:flex" 
+          minHeight="90px"
+          code={`
+            <script type="text/javascript">
+              atOptions = {
+                'key' : '64530885a0cbc7ae0904c3e6dfc4c192',
+                'format' : 'iframe',
+                'height' : 90,
+                'width' : 728,
+                'params' : {}
+              };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/64530885a0cbc7ae0904c3e6dfc4c192/invoke.js"></script>
+          `} 
+        />
+        <AdUnit 
+          className="md:hidden flex" 
+          minHeight="50px"
+          code={`
+            <script type="text/javascript">
+              atOptions = {
+                'key' : '2b58bfa05eeeaedde521d109142d97e3',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/2b58bfa05eeeaedde521d109142d97e3/invoke.js"></script>
+          `} 
+        />
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-3 gap-16 pt-12">
         <div className="lg:col-span-2 space-y-12">
            {/* Lead Text / Meta Description */}
@@ -162,15 +198,22 @@ export default async function BlogPostPage({
            <div className="prose prose-invert prose-red max-w-none prose-p:text-gray-400 prose-p:leading-relaxed prose-p:text-lg prose-headings:text-white prose-headings:font-black prose-strong:text-white">
              <div className="space-y-8 break-words overflow-hidden">
                 {post.content ? (
-                  <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                  <div dangerouslySetInnerHTML={{ __html: injectInArticleAds(post.content) }} />
                 ) : (
                   <p>No content available.</p>
                 )}
              </div>
            </div>
 
-           {/* Ad Unit */}
-           <AdUnit type="native" position="blog_in_article" />
+           {/* Extra Native Ad */}
+           <AdUnit 
+              className="my-8"
+              minHeight="150px"
+              code={`
+                <script async="async" data-cfasync="false" src="https://pl29300533.profitablecpmratenetwork.com/da55b4511adc1415509e85c18ae83962/invoke.js"></script>
+                <div id="container-da55b4511adc1415509e85c18ae83962"></div>
+              `}
+           />
 
            {/* Comments Section */}
            <div className="pt-16 border-t border-white/5">
@@ -192,7 +235,11 @@ export default async function BlogPostPage({
               </div>
            </div>
 
-           <AdUnit type="sidebar" position="blog_sidebar" />
+           <AdUnit 
+              minHeight="250px"
+              className="w-[300px] h-[250px] mx-auto bg-white/5 rounded-xl"
+              code={`<script type="text/javascript" src="https://pl29300532.profitablecpmratenetwork.com/cb/84/86/cb84861c3dec1995f49a5b34cd3e2a06.js"></script>`}
+           />
            
            <div className="bg-white/5 rounded-3xl p-8 border border-white/10 space-y-6">
               <div className="space-y-2 text-center">
@@ -211,6 +258,27 @@ export default async function BlogPostPage({
       </div>
     </article>
   )
+}
+
+function injectInArticleAds(content: string) {
+  const adCode = `
+    <div class="my-12 flex justify-center">
+      <script async="async" data-cfasync="false" src="https://pl29300533.profitablecpmratenetwork.com/da55b4511adc1415509e85c18ae83962/invoke.js"></script>
+      <div id="container-da55b4511adc1415509e85c18ae83962"></div>
+    </div>
+  `;
+  
+  const paragraphs = content.split('</p>');
+  if (paragraphs.length <= 3) return content;
+
+  let newContent = '';
+  for (let i = 0; i < paragraphs.length; i++) {
+    newContent += paragraphs[i] + (i < paragraphs.length - 1 ? '</p>' : '');
+    if ((i + 1) % 3 === 0 && i < paragraphs.length - 1) {
+      newContent += adCode;
+    }
+  }
+  return newContent;
 }
 
 function Star(props: any) {
