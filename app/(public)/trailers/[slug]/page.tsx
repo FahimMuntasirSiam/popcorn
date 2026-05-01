@@ -12,9 +12,48 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   if (!post) return { title: 'Not Found | Popcorn' }
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://popcorn.example.com'
+  const fullUrl = `${baseUrl}/${post.category}/${post.slug}`
+  const title = `${post.title} Trailer | Popcorn`
+  const description = post.meta_description || `Watch the official trailer for ${post.title}`
+
   return {
-    title: `${post.title} Trailer | Popcorn`,
-    description: post.meta_description || `Watch the official trailer for ${post.title}`,
+    title,
+    description,
+    keywords: `${post.title}, ${post.genre}, trailer, movie trailer`,
+    openGraph: {
+      title,
+      description,
+      url: fullUrl,
+      siteName: 'Popcorn',
+      images: post.cover_image ? [
+        {
+          url: post.cover_image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        }
+      ] : [],
+      locale: 'en_US',
+      type: 'video.other',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: post.cover_image ? [post.cover_image] : [],
+    },
+    alternates: {
+      canonical: fullUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
+    },
   }
 }
 
@@ -44,8 +83,26 @@ export default async function TrailerPostPage({
 
   const videoId = getYoutubeId(post.trailer_url)
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://popcorn.example.com'
+  const fullUrl = `${baseUrl}/${post.category}/${post.slug}`
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": post.title,
+    "description": post.meta_description,
+    "thumbnailUrl": post.cover_image,
+    "uploadDate": post.created_at,
+    "embedUrl": post.trailer_url,
+    "contentUrl": fullUrl,
+  }
+
   return (
     <article className="bg-popcorn-dark min-h-screen text-white pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero Trailer Section */}
       <div className="relative w-full aspect-video bg-black pt-16">
         <div className="absolute inset-0">

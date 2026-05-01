@@ -7,8 +7,48 @@ import Footer from "@/components/layout/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Popcorn - Movies & Blog",
-  description: "Your ultimate movie and blog destination.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://popcorn.example.com'),
+  title: {
+    default: 'Popcorn — Movies, Blogs & Trailers',
+    template: '%s | Popcorn',
+  },
+  description: 'Your ultimate destination for movies, film blogs, and latest trailers. Download HD movies and read reviews.',
+  keywords: ['movies', 'download movies', 'film blog', 'trailers', 'bangla movies', 'hindi movies', 'english movies', 'anime'],
+  openGraph: {
+    type: 'website',
+    siteName: 'Popcorn',
+    title: 'Popcorn — Movies, Blogs & Trailers',
+    description: 'Your ultimate destination for movies, film blogs and latest trailers.',
+    images: [
+      {
+        url: '/og-image.jpg', // Make sure this exists in public folder
+        width: 1200,
+        height: 630,
+        alt: 'Popcorn — Movies, Blogs & Trailers',
+      }
+    ],
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Popcorn — Movies, Blogs & Trailers',
+    description: 'Your ultimate destination for movies, film blogs and latest trailers.',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'ADD_GOOGLE_SEARCH_CONSOLE_CODE_HERE',
+  },
 };
 
 import GlobalAds from "@/components/interactions/GlobalAds";

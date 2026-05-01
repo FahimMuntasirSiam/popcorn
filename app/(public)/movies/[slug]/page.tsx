@@ -11,27 +11,51 @@ import { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const supabase = createClient()
-  const { data: movie } = await supabase.from('posts').select('*').eq('slug', params.slug).single()
+  const { data: post } = await supabase.from('posts').select('*').eq('slug', params.slug).single()
 
-  if (!movie) return { title: 'Not Found | Popcorn' }
+  if (!post) return { title: 'Not Found | Popcorn' }
 
-  const title = `${movie.title} | Popcorn`
-  const description = movie.meta_description || movie.content?.substring(0, 160) || ''
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://popcorn.example.com'
+  const fullUrl = `${baseUrl}/${post.category}/${post.slug}`
+  const title = `${post.title} | Popcorn`
+  const description = post.meta_description || post.content?.substring(0, 160) || ''
 
   return {
     title,
     description,
+    keywords: `${post.title}, ${post.genre}, ${post.language_tag}, download, movie`,
     openGraph: {
       title,
       description,
-      images: movie.cover_image ? [{ url: movie.cover_image }] : [],
+      url: fullUrl,
+      siteName: 'Popcorn',
+      images: post.cover_image ? [
+        {
+          url: post.cover_image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        }
+      ] : [],
+      locale: 'en_US',
       type: 'video.movie',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: movie.cover_image ? [movie.cover_image] : [],
+      images: post.cover_image ? [post.cover_image] : [],
+    },
+    alternates: {
+      canonical: fullUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
     },
   }
 }
@@ -63,17 +87,23 @@ export default async function MovieDetailPage({
 
   const videoId = getYoutubeId(movie.trailer_url)
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://popcorn.example.com'
+  const fullUrl = `${baseUrl}/${movie.category}/${movie.slug}`
+
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Movie',
-    name: movie.title,
-    description: movie.meta_description,
-    image: movie.cover_image,
-    datePublished: movie.created_at,
-    aggregateRating: movie.avg_rating ? {
-      '@type': 'AggregateRating',
-      ratingValue: movie.avg_rating,
-      reviewCount: movie.total_reviews || 1,
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    "name": movie.title,
+    "description": movie.meta_description,
+    "image": movie.cover_image,
+    "datePublished": movie.created_at,
+    "inLanguage": movie.language_tag,
+    "genre": movie.genre,
+    "url": fullUrl,
+    "aggregateRating": movie.avg_rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": movie.avg_rating,
+      "reviewCount": movie.total_reviews || 1,
     } : undefined,
   }
 

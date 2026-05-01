@@ -14,16 +14,29 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   if (!post) return { title: 'Not Found | Popcorn' }
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://popcorn.example.com'
+  const fullUrl = `${baseUrl}/${post.category}/${post.slug}`
   const title = `${post.title} | Popcorn`
   const description = post.meta_description || post.content?.substring(0, 160) || ''
 
   return {
     title,
     description,
+    keywords: `${post.title}, ${post.genre}, ${post.language_tag}, film blog, news`,
     openGraph: {
       title,
       description,
-      images: post.cover_image ? [{ url: post.cover_image }] : [],
+      url: fullUrl,
+      siteName: 'Popcorn',
+      images: post.cover_image ? [
+        {
+          url: post.cover_image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        }
+      ] : [],
+      locale: 'en_US',
       type: 'article',
     },
     twitter: {
@@ -31,6 +44,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title,
       description,
       images: post.cover_image ? [post.cover_image] : [],
+    },
+    alternates: {
+      canonical: fullUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
     },
   }
 }
@@ -55,8 +79,35 @@ export default async function BlogPostPage({
   const readingTime = Math.ceil((post.word_count || 1) / 200)
   const excerpt = post.content?.replace(/<[^>]*>/g, '').substring(0, 150) + '...'
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://popcorn.example.com'
+  const fullUrl = `${baseUrl}/${post.category}/${post.slug}`
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "description": post.meta_description,
+    "image": post.cover_image,
+    "datePublished": post.created_at,
+    "dateModified": post.updated_at,
+    "author": {
+      "@type": "Organization",
+      "name": "Popcorn"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Popcorn",
+      "url": baseUrl
+    },
+    "mainEntityOfPage": fullUrl,
+  }
+
   return (
     <article className="bg-[#0a0a0a] min-h-screen text-white pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header / Hero Section */}
       <div className="max-w-[900px] mx-auto px-4 pt-32 pb-12">
         <Link 

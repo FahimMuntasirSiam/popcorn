@@ -3,41 +3,52 @@ import { createClient } from '@/lib/supabase-server'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient()
-  const baseUrl = 'https://popcorn.com' // Replace with your production URL
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://popcorn.example.com'
 
   // Fetch all published posts
   const { data: posts } = await supabase
     .from('posts')
-    .select('slug, updated_at, category')
+    .select('slug, category, updated_at')
     .eq('status', 'published')
 
-  const postEntries: MetadataRoute.Sitemap = (posts || []).map((post) => ({
-    url: `${baseUrl}/${post.category.includes('blog') || post.category.includes('news') ? 'blog' : 'movies'}/${post.slug}`,
-    lastModified: new Date(post.updated_at),
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }))
-
-  const staticEntries: MetadataRoute.Sitemap = [
+  const staticPages: MetadataRoute.Sitemap = [
     {
-      url: baseUrl,
+      url: `${baseUrl}`,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 1,
+      priority: 1.0,
     },
     {
-      url: `${baseUrl}/category/movies`,
+      url: `${baseUrl}/movies`,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 0.8,
+      priority: 0.9,
     },
     {
-      url: `${baseUrl}/category/blog`,
+      url: `${baseUrl}/blogs`,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 0.8,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/trailers`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
   ]
 
-  return [...staticEntries, ...postEntries]
+  const dynamicPages: MetadataRoute.Sitemap = (posts || []).map((post) => {
+    let priority = 0.8
+    if (post.category === 'trailers') priority = 0.7
+
+    return {
+      url: `${baseUrl}/${post.category}/${post.slug}`,
+      lastModified: new Date(post.updated_at),
+      changeFrequency: 'weekly',
+      priority: priority,
+    }
+  })
+
+  return [...staticPages, ...dynamicPages]
 }
