@@ -70,3 +70,45 @@ create policy "Logged in users can insert reviews"
 
 create policy "Users can update own reviews"
   on reviews for update using (auth.uid() = user_id);
+
+-- BOOKMARKS TABLE
+create table bookmarks (
+  id uuid default gen_random_uuid() primary key,
+  post_id uuid references posts(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade,
+  created_at timestamptz default now(),
+  unique(post_id, user_id)
+);
+
+alter table bookmarks enable row level security;
+
+create policy "Users can read own bookmarks"
+  on bookmarks for select using (auth.uid() = user_id);
+
+create policy "Users can insert own bookmarks"
+  on bookmarks for insert with check (auth.uid() = user_id);
+
+create policy "Users can delete own bookmarks"
+  on bookmarks for delete using (auth.uid() = user_id);
+
+-- METRICS COLUMNS
+alter table posts add column if not exists avg_rating decimal default 0;
+alter table posts add column if not exists total_reviews integer default 0;
+
+-- AUTO-UPDATE TRIGGER FOR RATINGS
+create or replace function update_post_metrics()
+returns trigger as $$
+begin
+  update posts
+  set 
+    avg_rating = (select coalesce(avg(rating), 0) from reviews where post_id = coalesce(new.post_id, old.post_id)),
+    total_reviews = (select count(*) from reviews where post_id = coalesce(new.post_id, old.post_id))
+  where id = coalesce(new.post_id, old.post_id);
+  return null;
+end;
+$$ language plpgsql;
+
+drop trigger if exists tr_update_post_metrics on reviews;
+create trigger tr_update_post_metrics
+after insert or update or delete on reviews
+for each row execute function update_post_metrics();

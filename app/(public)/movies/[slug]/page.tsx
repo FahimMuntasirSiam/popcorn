@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { DownloadLink } from '@/types'
 import CommentSection from '@/components/interactions/CommentSection'
 import ReviewSection from '@/components/interactions/ReviewSection'
+import BookmarkButton from '@/components/interactions/BookmarkButton'
 import AdUnit from '@/components/ui/AdUnit'
 import { Metadata } from 'next'
 
@@ -219,12 +220,7 @@ export default async function MovieDetailPage({
                 </div>
                 <div className="h-12 w-px bg-white/5 hidden md:block" />
                 <div className="flex space-x-3">
-                   <button className="bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 transition-all group">
-                      <Download size={20} className="group-hover:scale-110 transition-transform" />
-                   </button>
-                   <button className="bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 transition-all group">
-                      <Star size={20} className="group-hover:scale-110 transition-transform" />
-                   </button>
+                   <BookmarkButton postId={movie.id} />
                 </div>
              </div>
           </section>
