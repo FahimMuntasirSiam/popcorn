@@ -90,12 +90,21 @@ export default function TipTapToolbar({ editor }: ToolbarProps) {
     const url = window.prompt('Link URL', previousUrl)
     
     if (url === null) return
+    
     if (url === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
       return
     }
     
+    // Explicitly focus and extend mark range to ensure the link is applied to the entire selection
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+    
+    // Brief delay to ensure state sync
+    setTimeout(() => {
+      if (editor && !editor.isDestroyed) {
+        editor.commands.focus()
+      }
+    }, 10)
   }
 
   const applyColor = (color: string) => {

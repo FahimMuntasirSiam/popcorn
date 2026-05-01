@@ -78,6 +78,8 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
     Underline,
     Link.configure({ 
       openOnClick: false,
+      autolink: true,
+      defaultProtocol: 'https',
       HTMLAttributes: {
         class: 'text-popcorn-red underline',
         rel: 'noopener noreferrer'
@@ -181,7 +183,14 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
     if (error) {
       toast.error(error.message)
     } else {
+      setStatus(currentStatus) // Sync local status state
       toast.success(postId ? 'Post updated' : 'Post created')
+      
+      // If published, clear the auto-save interval immediately
+      if (currentStatus === 'published' && autoSaveIntervalRef.current) {
+        clearInterval(autoSaveIntervalRef.current)
+      }
+
       if (!postId) {
         router.push('/admin/posts')
         router.refresh()
