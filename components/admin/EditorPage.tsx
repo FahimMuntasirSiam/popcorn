@@ -50,6 +50,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const [languageTag, setLanguageTag] = useState<LanguageTag>(initialData?.language_tag || 'english')
   const [genre, setGenre] = useState(initialData?.genre || '')
   const [trailerUrl, setTrailerUrl] = useState(initialData?.trailer_url || '')
+  const [imdbRating, setImdbRating] = useState(initialData?.imdb_rating?.toString() || '0.0')
   const [status, setStatus] = useState<PostStatus>(initialData?.status || 'draft')
   const [downloadLinks, setDownloadLinks] = useState<DownloadLink[]>(initialData?.download_links || [])
   const [coverImage, setCoverImage] = useState(initialData?.cover_image || '')
@@ -163,6 +164,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
       language_tag: languageTag.toLowerCase(),
       genre: genre.toLowerCase(),
       trailer_url: trailerUrl,
+      imdb_rating: parseFloat(imdbRating) || 0,
       status: currentStatus,
       download_links: downloadLinks,
       cover_image: coverImage,
@@ -425,6 +427,17 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                   <option value="drama" />
                   <option value="sci-fi" />
                 </datalist>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider text-[10px]">IMDb Rating</label>
+                <input 
+                  type="text"
+                  value={imdbRating}
+                  onChange={(e) => setImdbRating(e.target.value)}
+                  className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-popcorn-red"
+                  placeholder="e.g. 8.5"
+                />
               </div>
 
               <div className="space-y-1">

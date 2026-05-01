@@ -28,6 +28,7 @@ export type Post = {
   is_featured: boolean;
   avg_rating?: number;
   total_reviews?: number;
+  imdb_rating?: number;
   created_at: string;
   updated_at: string;
 };

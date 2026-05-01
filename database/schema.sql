@@ -94,6 +94,7 @@ create policy "Users can delete own bookmarks"
 -- METRICS COLUMNS
 alter table posts add column if not exists avg_rating decimal default 0;
 alter table posts add column if not exists total_reviews integer default 0;
+alter table posts add column if not exists imdb_rating decimal default 0;
 
 -- AUTO-UPDATE TRIGGER FOR RATINGS
 create or replace function update_post_metrics()

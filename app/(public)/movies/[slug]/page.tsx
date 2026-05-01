@@ -158,11 +158,21 @@ export default async function MovieDetailPage({
              <h1 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight leading-none drop-shadow-2xl">{movie.title}</h1>
              
              <div className="flex items-center space-x-6 text-sm text-popcorn-secondary font-bold">
-                <div className="flex items-center space-x-2 bg-black/40 px-4 py-2 rounded-full border border-white/5">
-                   <Star size={16} className="fill-popcorn-gold text-popcorn-gold" />
-                   <span className="text-white text-lg italic">{movie.avg_rating?.toFixed(1) || '0.0'}</span>
-                   <span className="text-xs text-neutral-500 uppercase tracking-widest ml-1">({movie.total_reviews || 0} Votes)</span>
+                <div className="flex items-center space-x-4">
+                   <div className="flex items-center space-x-2 bg-black/40 px-4 py-2 rounded-full border border-white/5">
+                      <Star size={16} className="fill-popcorn-gold text-popcorn-gold" />
+                      <span className="text-white text-lg italic">{movie.avg_rating?.toFixed(1) || '0.0'}</span>
+                      <span className="text-xs text-neutral-500 uppercase tracking-widest ml-1">({movie.total_reviews || 0} Votes)</span>
+                   </div>
+                   
+                   {movie.imdb_rating > 0 && (
+                     <div className="flex items-center space-x-2 bg-yellow-400/10 px-4 py-2 rounded-full border border-yellow-400/20 group hover:bg-yellow-400/20 transition-all duration-300">
+                        <span className="text-yellow-400 font-black text-[10px] tracking-tighter bg-black px-1.5 py-0.5 rounded leading-none">IMDb</span>
+                        <span className="text-white text-lg italic">{movie.imdb_rating.toFixed(1)}</span>
+                     </div>
+                   )}
                 </div>
+                
                 <div className="flex items-center space-x-2">
                    <Calendar size={18} className="text-popcorn-red" />
                    <span className="uppercase tracking-widest text-xs">{new Date(movie.created_at).getFullYear()}</span>
