@@ -31,23 +31,27 @@ class AdErrorBoundary extends React.Component<{ children: React.ReactNode }, { h
 }
 
 const AdUnitContent = ({ code, className, minHeight = '50px' }: AdUnitProps) => {
+  const adRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (adRef.current) {
+      adRef.current.innerHTML = ''
+      try {
+        const range = document.createRange()
+        const fragment = range.createContextualFragment(code)
+        adRef.current.appendChild(fragment)
+      } catch (err) {
+        console.error("Ad Injection Error:", err)
+      }
+    }
+  }, [code])
+
   return (
     <div 
+      ref={adRef}
       className={`flex justify-center items-center overflow-hidden w-full ${className || ''}`}
       style={{ minHeight }}
-    >
-      <iframe
-        title="Advertisement"
-        style={{ width: '100%', height: '100%', border: 'none', minHeight }}
-        srcDoc={`
-          <html>
-            <body style="margin:0; padding:0; display:flex; justify-content:center; align-items:center; background:transparent;">
-              ${code}
-            </body>
-          </html>
-        `}
-      />
-    </div>
+    />
   )
 }
 

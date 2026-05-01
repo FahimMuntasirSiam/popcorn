@@ -213,13 +213,12 @@ export default async function MovieDetailPage({
         <div className="lg:col-span-2 space-y-16">
           {/* Quick Actions / Rating */}
           <section className="bg-popcorn-card/20 p-8 rounded-3xl border border-white/5 shadow-inner">
-             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+             <div className="flex flex-col md:flex-row md:items-center gap-12">
                 <div className="space-y-4">
                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-popcorn-red">Rate this movie</h3>
                    <ReviewSection postId={movie.id} />
                 </div>
-                <div className="h-12 w-px bg-white/5 hidden md:block" />
-                <div className="flex space-x-3">
+                <div className="flex pt-4 md:pt-8">
                    <BookmarkButton postId={movie.id} />
                 </div>
              </div>
