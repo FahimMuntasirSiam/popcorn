@@ -10,7 +10,10 @@ import { Color } from '@tiptap/extension-color'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Highlight } from '@tiptap/extension-highlight'
 import { CharacterCount } from '@tiptap/extension-character-count'
+import { Placeholder } from '@tiptap/extension-placeholder'
 import TipTapToolbar from './TipTapToolbar'
+import EditorErrorBoundary from '../editor/EditorErrorBoundary'
+import { useMemo, useRef } from 'react'
 import { 
   Save, 
   Upload, 
@@ -55,31 +58,63 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [wordCount, setWordCount] = useState(0)
+  const autoSaveIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Safe command helper
+  const safeCommand = (fn: (editor: any) => void) => {
+    if (!editor || editor.isDestroyed) return
+    fn(editor)
+  }
+
+  // TipTap Extensions
+  const extensions = useMemo(() => [
+    StarterKit.configure({
+      heading: {
+        levels: [1, 2, 3],
+      },
+      link: false,
+      underline: false,
+    }),
+    Underline,
+    Link.configure({ 
+      openOnClick: false,
+      HTMLAttributes: {
+        class: 'text-popcorn-red underline',
+        rel: 'noopener noreferrer'
+      }
+    }).extend({
+      addKeyboardShortcuts() {
+        return {
+          'Mod-k': () => {
+            window.dispatchEvent(new CustomEvent('editor-open-link-dialog'))
+            return true
+          },
+          'Mod-Shift-l': () => {
+            window.dispatchEvent(new CustomEvent('editor-open-link-dialog'))
+            return true
+          },
+          'Mod-Shift-h': () => {
+            this.editor.chain().focus().toggleHighlight().run()
+            return true
+          },
+        }
+      },
+    }),
+    ImageExtension,
+    TextStyle,
+    Color,
+    Highlight.configure({ multicolor: true }),
+    CharacterCount,
+    Placeholder.configure({
+      placeholder: 'Start writing your post...'
+    })
+  ], [])
 
   // TipTap Initialize
   const editor = useEditor({
     immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3],
-        },
-        link: false,
-        underline: false,
-      }),
-      Underline,
-      Link.configure({ 
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-popcorn-red underline'
-        }
-      }),
-      ImageExtension,
-      TextStyle,
-      Color,
-      Highlight.configure({ multicolor: true }),
-      CharacterCount
-    ],
+    autofocus: false,
+    extensions,
     content: initialData?.content || '',
     editorProps: {
       attributes: {
@@ -159,14 +194,21 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   useEffect(() => {
     if (status !== 'draft') return 
 
-    const interval = setInterval(() => {
-      if (title && editor?.getHTML() !== '<p></p>') {
+    autoSaveIntervalRef.current = setInterval(() => {
+      if (!editor || editor.isDestroyed) return
+      
+      const content = editor.getHTML()
+      if (title && content !== '<p></p>') {
         handleSave('draft')
         console.log('Auto-saved draft at', new Date().toLocaleTimeString())
       }
     }, 60000)
 
-    return () => clearInterval(interval)
+    return () => {
+      if (autoSaveIntervalRef.current) {
+        clearInterval(autoSaveIntervalRef.current)
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, editor, slug, metaDescription, category, languageTag, genre])
 
@@ -236,8 +278,10 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
           
           <div className="border border-white/10 rounded-2xl overflow-hidden shadow-inner bg-neutral-900/30">
             <TipTapToolbar editor={editor} />
-            <div className="min-h-[500px]">
-              <EditorContent editor={editor} />
+            <div className="min-h-[400px] transition-all duration-300">
+              <EditorErrorBoundary onReset={() => router.refresh()}>
+                <EditorContent editor={editor} />
+              </EditorErrorBoundary>
             </div>
             <div className="p-4 bg-white/5 border-t border-white/10 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-popcorn-secondary">
                <div className="flex items-center space-x-2">

@@ -19,9 +19,13 @@ import {
   Redo,
   Loader2,
   Type,
-  Highlighter
+  Highlighter,
+  Trash2,
+  HelpCircle,
+  Link2Off,
+  Eraser
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 import { translateText } from '@/lib/translate'
 
@@ -31,8 +35,22 @@ interface ToolbarProps {
 
 export default function TipTapToolbar({ editor }: ToolbarProps) {
   const [translating, setTranslating] = useState(false)
+  const [showShortcuts, setShowShortcuts] = useState(false)
+  const colorInputRef = useRef<HTMLInputElement>(null)
+  const highlightInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const handler = () => {
+      if (!editor || editor.isDestroyed) return
+      setLink()
+    }
+    window.addEventListener('editor-open-link-dialog', handler)
+    return () => window.removeEventListener('editor-open-link-dialog', handler)
+  }, [editor])
 
   if (!editor) return null
+
+  const isDestroyed = editor.isDestroyed
 
   const handleTranslate = async (lang: 'bn' | 'en') => {
     const content = editor.getHTML()
@@ -55,17 +73,39 @@ export default function TipTapToolbar({ editor }: ToolbarProps) {
   }
 
   const addImage = () => {
+    if (!editor || editor.isDestroyed) return
     const url = window.prompt('Image URL')
     if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
+      try {
+        editor.chain().focus().setImage({ src: url }).run()
+      } catch (err) {
+        toast.error('Failed to insert image')
+      }
     }
   }
 
   const setLink = () => {
-    const url = window.prompt('Link URL')
-    if (url) {
-      editor.chain().focus().setLink({ href: url }).run()
+    if (!editor || editor.isDestroyed) return
+    const previousUrl = editor.getAttributes('link').href
+    const url = window.prompt('Link URL', previousUrl)
+    
+    if (url === null) return
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run()
+      return
     }
+    
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+  }
+
+  const applyColor = (color: string) => {
+    if (!editor || editor.isDestroyed) return
+    editor.chain().focus().setColor(color).run()
+  }
+
+  const applyHighlight = (color: string) => {
+    if (!editor || editor.isDestroyed) return
+    editor.chain().focus().setHighlight({ color }).run()
   }
 
   const Button = ({ onClick, isActive, children, title, className }: { onClick: () => void, isActive?: boolean, children: React.ReactNode, title: string, className?: string }) => (
@@ -125,23 +165,70 @@ export default function TipTapToolbar({ editor }: ToolbarProps) {
 
       <Separator />
 
-      {/* [Text Color] [Highlight] */}
+      {/* [Text Color] [Highlight] [Unset Color] */}
       <div className="flex items-center gap-1">
-        <input
-          type="color"
-          onInput={(event) => editor.chain().focus().setColor((event.target as HTMLInputElement).value).run()}
-          value={editor.getAttributes('textStyle').color || '#ffffff'}
-          className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 overflow-hidden"
-          title="Text Color"
-        />
-        <Button 
-          onClick={() => editor.chain().focus().toggleHighlight().run()} 
-          isActive={editor.isActive('highlight')} 
-          title="Highlight"
-        >
-          <Highlighter size={18} />
-        </Button>
+        <div className="relative flex items-center gap-1 bg-white/5 p-1 rounded-lg">
+          <button
+            className="w-7 h-7 rounded border border-white/20 transition-all hover:scale-105"
+            style={{ 
+              backgroundColor: editor.getAttributes('textStyle').color || '#ffffff',
+            }}
+            onClick={() => colorInputRef.current?.click()}
+            title="Text Color"
+          />
+          <input
+            ref={colorInputRef}
+            type="color"
+            value={editor.getAttributes('textStyle').color || '#ffffff'}
+            onChange={(e) => applyColor(e.target.value)}
+            className="absolute opacity-0 w-0 h-0 pointer-events-none"
+          />
+          <button 
+            onClick={() => editor.chain().focus().unsetColor().run()}
+            className="text-[10px] text-neutral-500 hover:text-white px-1"
+            title="Unset Color"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="relative flex items-center gap-1 bg-white/5 p-1 rounded-lg">
+          <button
+            className="w-7 h-7 rounded border border-white/20 transition-all hover:scale-105 flex items-center justify-center"
+            style={{ 
+              backgroundColor: editor.getAttributes('highlight').color || 'transparent',
+            }}
+            onClick={() => highlightInputRef.current?.click()}
+            title="Highlight Color"
+          >
+            <Highlighter size={14} className={editor.isActive('highlight') ? 'text-white' : 'text-neutral-500'} />
+          </button>
+          <input
+            ref={highlightInputRef}
+            type="color"
+            value={editor.getAttributes('highlight').color || '#ffff00'}
+            onChange={(e) => applyHighlight(e.target.value)}
+            className="absolute opacity-0 w-0 h-0 pointer-events-none"
+          />
+          <button 
+            onClick={() => editor.chain().focus().unsetHighlight().run()}
+            className="text-[10px] text-neutral-500 hover:text-white px-1"
+            title="Unset Highlight"
+          >
+            ✕
+          </button>
+        </div>
       </div>
+
+      <Separator />
+
+      {/* [Clear Formatting] */}
+      <Button 
+        onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()} 
+        title="Clear Formatting"
+      >
+        <Eraser size={18} />
+      </Button>
 
       <Separator />
 
@@ -201,6 +288,44 @@ export default function TipTapToolbar({ editor }: ToolbarProps) {
            {translating ? <Loader2 size={12} className="animate-spin mr-1" /> : <Languages size={12} className="mr-1" />}
           বাংলা → EN
         </button>
+      </div>
+
+      <Separator />
+
+      {/* Help Tooltip */}
+      <div className="relative">
+        <Button onClick={() => setShowShortcuts(!showShortcuts)} title="Keyboard Shortcuts">
+          <HelpCircle size={18} />
+        </Button>
+        
+        {showShortcuts && (
+          <div className="absolute right-0 bottom-full mb-2 w-64 bg-neutral-900 border border-white/10 rounded-xl p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-bottom-2">
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-popcorn-red mb-3">Keyboard Shortcuts</h4>
+            <div className="space-y-2">
+              {[
+                ['Ctrl+B', 'Bold'],
+                ['Ctrl+I', 'Italic'],
+                ['Ctrl+U', 'Underline'],
+                ['Ctrl+K', 'Insert Link'],
+                ['Ctrl+Shift+H', 'Highlight'],
+                ['Ctrl+Shift+L', 'Insert Link'],
+                ['Ctrl+Z', 'Undo'],
+                ['Ctrl+Shift+Z', 'Redo'],
+              ].map(([key, label]) => (
+                <div key={key} className="flex justify-between items-center">
+                  <span className="text-[10px] text-neutral-400 font-bold">{label}</span>
+                  <kbd className="px-2 py-0.5 bg-white/5 rounded border border-white/10 text-[9px] font-mono text-white">{key}</kbd>
+                </div>
+              ))}
+            </div>
+            <button 
+              onClick={() => setShowShortcuts(false)}
+              className="w-full mt-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

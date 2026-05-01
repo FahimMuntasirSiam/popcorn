@@ -57,3 +57,32 @@ body {
 .glass {
   @apply bg-black/60 backdrop-blur-md;
 }
+
+/* TipTap Editor Styles */
+.tiptap {
+  min-height: 400px;
+  outline: none !important;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #555;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+[style*="color"] {
+  color: inherit !important;
+}
+
+.editor-link {
+  color: #E50914;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Custom Scrollbar for Editor (if needed) - actually we want page scroll */
+.tiptap {
+  overflow-y: visible !important;
+}
