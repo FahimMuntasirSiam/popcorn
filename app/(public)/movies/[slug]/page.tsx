@@ -159,16 +159,10 @@ export default async function MovieDetailPage({
              
              <div className="flex items-center space-x-6 text-sm text-popcorn-secondary font-bold">
                 <div className="flex items-center space-x-4">
-                   <div className="flex items-center space-x-2 bg-black/40 px-4 py-2 rounded-full border border-white/5">
-                      <Star size={16} className="fill-popcorn-gold text-popcorn-gold" />
-                      <span className="text-white text-lg italic">{movie.avg_rating?.toFixed(1) || '0.0'}</span>
-                      <span className="text-xs text-neutral-500 uppercase tracking-widest ml-1">({movie.total_reviews || 0} Votes)</span>
-                   </div>
-                   
                    {movie.imdb_rating > 0 && (
-                     <div className="flex items-center space-x-2 bg-yellow-400/10 px-4 py-2 rounded-full border border-yellow-400/20 group hover:bg-yellow-400/20 transition-all duration-300">
-                        <span className="text-yellow-400 font-black text-[10px] tracking-tighter bg-black px-1.5 py-0.5 rounded leading-none">IMDb</span>
-                        <span className="text-white text-lg italic">{movie.imdb_rating.toFixed(1)}</span>
+                     <div className="flex items-center space-x-2.5 bg-black/60 px-3 py-1.5 rounded-2xl border border-white/5 group hover:border-yellow-400/30 transition-all duration-500">
+                        <span className="text-black font-black text-[9px] tracking-tight bg-yellow-400 px-1.5 py-1 rounded-lg leading-none shadow-[0_0_15px_rgba(250,204,21,0.15)] uppercase">IMDb</span>
+                        <span className="text-white text-base font-black tracking-tighter leading-none">{movie.imdb_rating.toFixed(1)}</span>
                      </div>
                    )}
                 </div>
