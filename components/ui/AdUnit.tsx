@@ -36,10 +36,26 @@ const AdUnitContent = ({ code, className, minHeight = '50px' }: AdUnitProps) => 
   React.useEffect(() => {
     if (adRef.current) {
       adRef.current.innerHTML = ''
+      
       try {
-        const range = document.createRange()
-        const fragment = range.createContextualFragment(code)
-        adRef.current.appendChild(fragment)
+        const div = document.createElement('div')
+        div.innerHTML = code
+        const scripts = Array.from(div.querySelectorAll('script'))
+        
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script')
+          Array.from(oldScript.attributes).forEach(attr => {
+            newScript.setAttribute(attr.name, attr.value)
+          })
+          newScript.innerHTML = oldScript.innerHTML
+          adRef.current?.appendChild(newScript)
+        })
+
+        // Also append non-script content
+        const nonScripts = Array.from(div.childNodes).filter(node => node.nodeName !== 'SCRIPT')
+        nonScripts.forEach(node => {
+          adRef.current?.appendChild(node.cloneNode(true))
+        })
       } catch (err) {
         console.error("Ad Injection Error:", err)
       }

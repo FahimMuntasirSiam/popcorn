@@ -140,7 +140,7 @@ export default async function MovieDetailPage({
             )}
           </div>
           
-          <div className="space-y-4 pb-4">
+          <div className="space-y-4 pb-4 w-full">
              <div className="flex flex-wrap gap-2">
                 <span className="bg-popcorn-red text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
                   {movie.category}
@@ -166,6 +166,9 @@ export default async function MovieDetailPage({
                 <div className="flex items-center space-x-2">
                    <Calendar size={18} className="text-popcorn-red" />
                    <span className="uppercase tracking-widest text-xs">{new Date(movie.created_at).getFullYear()}</span>
+                </div>
+                <div className="ml-auto">
+                   <BookmarkButton postId={movie.id} />
                 </div>
              </div>
           </div>
@@ -211,18 +214,6 @@ export default async function MovieDetailPage({
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-16">
-          {/* Quick Actions / Rating */}
-          <section className="bg-popcorn-card/20 p-8 rounded-3xl border border-white/5 shadow-inner">
-             <div className="flex flex-col md:flex-row md:items-center gap-12">
-                <div className="space-y-4">
-                   <h3 className="text-sm font-black uppercase tracking-[0.2em] text-popcorn-red">Rate this movie</h3>
-                   <ReviewSection postId={movie.id} />
-                </div>
-                <div className="flex pt-4 md:pt-8">
-                   <BookmarkButton postId={movie.id} />
-                </div>
-             </div>
-          </section>
 
           {/* Storyline */}
           <section className="space-y-6">
@@ -375,7 +366,7 @@ export default async function MovieDetailPage({
                 </div>
               </div>
            </section>
-        </div>
+         </div>
       </div>
     </div>
   )
