@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -91,7 +92,9 @@ export default function RootLayout({
           strategy="afterInteractive"
           src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
         />
-        <Navbar />
+        <Suspense fallback={<div className="h-16 bg-popcorn-dark" />}>
+          <Navbar />
+        </Suspense>
         <main className="grow">
           {children}
         </main>

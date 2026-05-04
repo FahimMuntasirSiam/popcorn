@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase-server'
 import MovieCard from '@/components/cards/MovieCard'
 import AdUnit from '@/components/ui/AdUnit'
 import PillFilter from '@/components/ui/PillFilter'
-import React from 'react'
+import React, { Suspense } from 'react'
 import Link from 'next/link'
 
 export const metadata = {
@@ -45,7 +45,9 @@ export default async function MoviesListingPage({
       </div>
 
       {/* Filter Section */}
-      <PillFilter count={posts?.length || 0} />
+      <Suspense fallback={<div className="h-20 bg-white/5 animate-pulse rounded-2xl mb-8" />}>
+        <PillFilter count={posts?.length || 0} />
+      </Suspense>
 
       {/* Grid Section */}
       {posts && posts.length > 0 ? (
