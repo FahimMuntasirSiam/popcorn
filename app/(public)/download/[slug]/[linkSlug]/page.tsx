@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import DownloadGateClient from '@/app/(public)/download/[slug]/[linkSlug]/DownloadGateClient'
+import { createClient } from '@/lib/supabase-server'
+import DownloadGateClient from './DownloadGateClient'
 import MovieCard from '@/components/cards/MovieCard'
 
 export default async function DownloadGatePage({ 
@@ -23,7 +23,7 @@ export default async function DownloadGatePage({
   const link = post.download_links?.find((l: any) => l.slug === params.linkSlug)
   if (!link) notFound()
 
-  // Sanitize the entire post object's download links before sending to client
+  // Sanitize for client
   const sanitizedPost = {
     ...post,
     download_links: post.download_links?.map((l: any) => ({
@@ -34,7 +34,6 @@ export default async function DownloadGatePage({
     }))
   }
 
-  // Sanitize link for client
   const sanitizedLink = {
     label: link.label,
     quality: link.quality,
@@ -42,7 +41,7 @@ export default async function DownloadGatePage({
     slug: link.slug
   }
 
-  // Fetch recommendations (same language, excluding current)
+  // Fetch 4 recommendations
   const { data: recommendations } = await supabase
     .from('posts')
     .select('*')
@@ -50,32 +49,28 @@ export default async function DownloadGatePage({
     .eq('status', 'published')
     .neq('id', post.id)
     .limit(4)
+    .order('created_at', { ascending: false })
 
   return (
-    <div className="bg-[#0a0a0a] min-h-screen text-white pt-24 pb-20 px-4">
-      <div className="max-w-[480px] mx-auto space-y-12">
-        
-        {/* The interactive countdown and download logic */}
-        <DownloadGateClient 
-          post={sanitizedPost as any} 
-          link={sanitizedLink as any} 
-          slug={params.slug} 
-          linkSlug={params.linkSlug} 
-        />
+    <div className="bg-[#0a0a0a] min-h-screen text-white pt-16">
+      {/* The main interactive section */}
+      <DownloadGateClient 
+        post={sanitizedPost as any} 
+        link={sanitizedLink as any} 
+        slug={params.slug} 
+        linkSlug={params.linkSlug} 
+      />
 
-        {/* Recommendations Section */}
-        {recommendations && recommendations.length > 0 && (
-          <div className="space-y-6 pt-12 border-t border-white/5">
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-popcorn-secondary text-center">
-              More movies you might like
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              {recommendations.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} />
-              ))}
-            </div>
-          </div>
-        )}
+      {/* Recommendations Section */}
+      <div className="max-w-7xl mx-auto px-6 py-16 border-t border-white/5">
+        <h3 className="text-[12px] font-bold uppercase tracking-[3px] text-[#666] mb-10">
+          More movies you might like
+        </h3>
+        <div className="flex flex-wrap gap-6 justify-center">
+          {recommendations?.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} variant="fixed" />
+          ))}
+        </div>
       </div>
     </div>
   )
