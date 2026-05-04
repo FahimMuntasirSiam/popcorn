@@ -4,19 +4,24 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X, ChevronDown, User as UserIcon, LogOut, Settings, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { User } from '@supabase/supabase-js'
+import { cn } from '@/lib/utils'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isMoviesOpen, setIsMoviesOpen] = useState(false)
+  const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [lang, setLang] = useState<'EN' | 'BN'>('EN')
   
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
+  const currentLang = searchParams.get('lang') || ''
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,6 +29,18 @@ export default function Navbar() {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
       setSearchQuery('')
     }
+  }
+
+  const handleMouseEnter = () => {
+    if (closeTimeout) clearTimeout(closeTimeout)
+    setIsMoviesOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setIsMoviesOpen(false)
+    }, 100)
+    setCloseTimeout(timeout)
   }
 
   useEffect(() => {
@@ -43,7 +60,6 @@ export default function Navbar() {
   }, [supabase])
 
   useEffect(() => {
-    // Detect current language from cookie
     const getLangFromCookie = () => {
       const cookies = document.cookie.split('; ');
       const transCookie = cookies.find(row => row.startsWith('googtrans='));
@@ -53,25 +69,18 @@ export default function Navbar() {
       }
       return 'EN';
     };
-    
     setLang(getLangFromCookie());
   }, []);
 
   const toggleLanguage = () => {
     const newLang = lang === 'EN' ? 'BN' : 'EN';
     const cookieValue = newLang === 'BN' ? '/en/bn' : '/en/en';
-    
-    // Clear existing cookies to be sure
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-    
-    // Set new cookie
     const expires = new Date();
     expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000));
-    
     document.cookie = `googtrans=${cookieValue}; expires=${expires.toUTCString()}; path=/;`;
     document.cookie = `googtrans=${cookieValue}; expires=${expires.toUTCString()}; path=/; domain=${window.location.hostname};`;
-    
     setLang(newLang);
     window.location.reload();
   };
@@ -82,11 +91,11 @@ export default function Navbar() {
     router.refresh()
   }
 
-  const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Movies', href: '/movies' },
-    { name: 'Blogs', href: '/blogs' },
-    { name: 'Trailers', href: '/trailers' },
+  const movieLanguages = [
+    { name: 'All Movies', href: '/movies', value: '', icon: '🎬' },
+    { name: 'English', href: '/movies?lang=english', value: 'english', icon: '🎬' },
+    { name: 'বাংলা', href: '/movies?lang=bangla', value: 'bangla', icon: '🎬' },
+    { name: 'Hindi', href: '/movies?lang=hindi', value: 'hindi', icon: '🎬' },
   ]
 
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0]
@@ -103,16 +112,83 @@ export default function Navbar() {
               </span>
             </Link>
             <div className="hidden md:block ml-10">
-              <div className="flex items-baseline space-x-8">
-                {navLinks.map((link) => (
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/"
+                  className="text-popcorn-secondary hover:text-popcorn-red px-3 py-2 rounded-md text-sm font-bold transition-all"
+                >
+                  Home
+                </Link>
+                
+                <div 
+                  className="relative h-16 flex items-center"
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
                   <Link
-                    key={link.name}
-                    href={link.href}
-                    className="text-popcorn-secondary hover:text-popcorn-red px-3 py-2 rounded-md text-sm font-bold transition-all"
+                    href="/movies"
+                    className={cn(
+                      "text-popcorn-secondary hover:text-popcorn-red px-3 py-2 rounded-md text-sm font-bold transition-all flex items-center space-x-1",
+                      isMoviesOpen && "text-popcorn-red"
+                    )}
                   >
-                    {link.name}
+                    <span>Movies</span>
+                    <ChevronDown size={14} className={cn("transition-transform duration-200", isMoviesOpen && "rotate-180")} />
                   </Link>
-                ))}
+
+                  {/* Simplified Text Dropdown */}
+                  {isMoviesOpen && (
+                    <div className="absolute top-full left-0 w-[180px] bg-[#141414] border border-[#222] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.6)] py-2 animate-in fade-in slide-in-from-top-1 duration-200 z-50">
+                       <p className="text-[10px] font-black text-[#555] uppercase tracking-[2px] px-4 py-2 pointer-events-none">Browse by Language</p>
+                       
+                       <div className="flex flex-col">
+                          {movieLanguages.map((l) => (
+                            <Link 
+                              key={l.name}
+                              href={l.href}
+                              className={cn(
+                                "px-4 py-2.5 text-sm transition-all duration-200",
+                                currentLang === l.value 
+                                  ? "text-popcorn-red font-bold" 
+                                  : "text-[#aaa] hover:text-white hover:bg-[#1f1f1f]"
+                              )}
+                              onClick={() => setIsMoviesOpen(false)}
+                            >
+                               {l.name}
+                            </Link>
+                          ))}
+
+                          <div className="h-[1px] bg-[#222] my-1" />
+
+                          <Link 
+                            href="/movies?lang=anime"
+                            className={cn(
+                              "px-4 py-2.5 text-sm transition-all duration-200",
+                              currentLang === 'anime'
+                                ? "text-popcorn-red font-bold"
+                                : "text-[#aaa] hover:text-white hover:bg-[#1f1f1f]"
+                            )}
+                            onClick={() => setIsMoviesOpen(false)}
+                          >
+                             Anime
+                          </Link>
+                       </div>
+                    </div>
+                  )}
+                </div>
+
+                <Link
+                  href="/blogs"
+                  className="text-popcorn-secondary hover:text-popcorn-red px-3 py-2 rounded-md text-sm font-bold transition-all"
+                >
+                  Blogs
+                </Link>
+                <Link
+                  href="/trailers"
+                  className="text-popcorn-secondary hover:text-popcorn-red px-3 py-2 rounded-md text-sm font-bold transition-all"
+                >
+                  Trailers
+                </Link>
               </div>
             </div>
           </div>
@@ -213,16 +289,59 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden bg-popcorn-dark border-b border-white/10 animate-in slide-in-from-top duration-300">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-popcorn-secondary hover:text-white block px-3 py-4 rounded-md text-base font-bold"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+            <Link
+              href="/"
+              className="text-popcorn-secondary hover:text-white block px-3 py-4 rounded-md text-base font-bold border-b border-white/5"
+              onClick={() => setIsOpen(false)}
+            >
+              Home
+            </Link>
+            
+            {/* Mobile Movies Section */}
+            <div className="border-b border-white/5 py-2">
+               <p className="px-3 text-[10px] font-black text-popcorn-secondary uppercase tracking-[0.2em] mb-2">Movies</p>
+               <div className="grid grid-cols-2 gap-2 px-3">
+                  {movieLanguages.map((l) => (
+                    <Link
+                      key={l.name}
+                      href={l.href}
+                      className={cn(
+                        "p-3 rounded-lg text-xs font-bold transition-all",
+                        currentLang === l.value ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"
+                      )}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {l.name}
+                    </Link>
+                  ))}
+                  <Link
+                    href="/movies?lang=anime"
+                    className={cn(
+                      "col-span-2 p-3 rounded-lg text-xs font-bold transition-all flex items-center gap-2",
+                      currentLang === 'anime' ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"
+                    )}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>🎌</span>
+                    <span>Anime Movies</span>
+                  </Link>
+               </div>
+            </div>
+
+            <Link
+              href="/blogs"
+              className="text-popcorn-secondary hover:text-white block px-3 py-4 rounded-md text-base font-bold border-b border-white/5"
+              onClick={() => setIsOpen(false)}
+            >
+              Blogs
+            </Link>
+            <Link
+              href="/trailers"
+              className="text-popcorn-secondary hover:text-white block px-3 py-4 rounded-md text-base font-bold border-b border-white/5"
+              onClick={() => setIsOpen(false)}
+            >
+              Trailers
+            </Link>
             <form onSubmit={handleSearch} className="px-3 py-4 relative">
               <input 
                 type="text"

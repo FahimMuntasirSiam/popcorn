@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase-server'
 import MovieCard from '@/components/cards/MovieCard'
 import AdUnit from '@/components/ui/AdUnit'
-import FilterBar from '@/components/ui/FilterBar'
+import PillFilter from '@/components/ui/PillFilter'
 import React from 'react'
+import Link from 'next/link'
 
 export const metadata = {
   title: 'Movies | Popcorn',
@@ -12,11 +13,10 @@ export const metadata = {
 export default async function MoviesListingPage({ 
   searchParams 
 }: { 
-  searchParams: { lang?: string, genre?: string }
+  searchParams: { lang?: string }
 }) {
   const supabase = createClient()
   const lang = searchParams.lang
-  const genre = searchParams.genre
 
   let query = supabase
     .from('posts')
@@ -28,47 +28,33 @@ export default async function MoviesListingPage({
   if (lang) {
     query = query.eq('language_tag', lang.toLowerCase())
   }
-  if (genre) {
-    query = query.eq('genre', genre.toLowerCase())
-  }
 
   const { data: posts } = await query
 
-  // Fetch filter options
-  const { data: allPosts } = await supabase
-    .from('posts')
-    .select('language_tag, genre')
-    .eq('status', 'published')
-    .eq('category', 'movies')
-
-  const languages = Array.from(new Set(allPosts?.map(p => p.language_tag).filter(Boolean)))
-  const genres = Array.from(new Set(allPosts?.map(p => p.genre).filter(Boolean)))
-
   return (
-    <div className="bg-popcorn-dark min-h-screen text-white pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto uppercase tracking-tighter">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
-        <div className="flex items-center space-x-4 flex-1">
-          <h1 className="text-4xl md:text-6xl font-black italic">MOVIES</h1>
-          <div className="h-0.5 flex-1 bg-white/5" />
+    <div className="bg-popcorn-dark min-h-screen text-white pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="flex flex-col mb-10">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="w-1.5 h-10 bg-popcorn-red rounded-full" />
+          <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter" style={{ fontFamily: 'Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif' }}>
+            MOVIES
+          </h1>
         </div>
       </div>
 
-      <FilterBar 
-        languages={languages as string[]} 
-        genres={genres as string[]} 
-        currentLang={lang} 
-        currentGenre={genre} 
-        title="movies" 
-      />
+      {/* Filter Section */}
+      <PillFilter count={posts?.length || 0} />
 
+      {/* Grid Section */}
       {posts && posts.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-8 pb-20">
           {posts.map((post, index) => (
             <React.Fragment key={post.id}>
               <MovieCard movie={post} />
               
-              {(index + 1) % 8 === 0 && (
-                <div className="col-span-full py-4">
+              {(index + 1) % 12 === 0 && (
+                <div className="col-span-full py-8 border-y border-white/5 my-4">
                   <AdUnit 
                     className="hidden md:flex" 
                     minHeight="90px"
@@ -91,8 +77,19 @@ export default async function MoviesListingPage({
           ))}
         </div>
       ) : (
-        <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-3xl">
-          <p className="text-xl font-bold text-popcorn-secondary">No movies found matching your filters.</p>
+        <div className="py-32 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-4">
+             <span className="text-4xl">🎬</span>
+          </div>
+          <h3 className="text-2xl font-bold text-white uppercase tracking-tight">
+             No {lang ? lang : ''} movies yet. Check back soon!
+          </h3>
+          <Link 
+            href="/movies"
+            className="bg-popcorn-red text-white px-8 py-3 rounded-full font-bold uppercase text-xs tracking-widest hover:bg-white hover:text-popcorn-red transition-all shadow-2xl"
+          >
+            View All Movies
+          </Link>
         </div>
       )}
     </div>
