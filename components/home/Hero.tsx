@@ -27,7 +27,7 @@ export default function Hero({ movies }: HeroProps) {
   const prev = () => setCurrent((prev) => (prev - 1 + movies.length) % movies.length)
 
   return (
-    <div className="relative w-full min-h-[420px] lg:h-[580px] overflow-hidden bg-popcorn-dark flex flex-col items-center justify-center pt-20 pb-10">
+    <div className="relative w-full h-[380px] md:h-[480px] lg:h-[580px] overflow-hidden bg-popcorn-dark flex flex-col items-center justify-center pt-12">
       {/* Fixed Premium Backdrop */}
       <div className="absolute inset-0">
         <Image
@@ -130,7 +130,7 @@ export default function Hero({ movies }: HeroProps) {
         </div>
 
         {/* Active Movie Info */}
-        <div className="text-center w-full px-4 pt-2 pb-10 animate-in fade-in zoom-in duration-500 flex flex-col items-center">
+        <div className="text-center w-full px-4 pt-2 pb-0 animate-in fade-in zoom-in duration-500 flex flex-col items-center">
            <div className="flex flex-col items-center">
               <Link href={`/movies/${activeMovie?.slug}`} className="group/title">
                 <h2 className="text-[20px] lg:text-[28px] font-bold text-white tracking-normal uppercase not-italic leading-[1.3] drop-shadow-2xl max-w-[600px] text-center mb-1 group-hover/title:text-popcorn-red transition-colors duration-200 line-clamp-2">

@@ -7,25 +7,32 @@ import { cn } from '@/lib/utils'
 interface MovieCardProps {
   movie: Post;
   className?: string;
+  variant?: 'grid' | 'fixed';
 }
 
-export default function MovieCard({ movie, className }: MovieCardProps) {
+export default function MovieCard({ movie, className, variant = 'grid' }: MovieCardProps) {
+  const isFixed = variant === 'fixed';
+
   return (
     <Link 
       href={`/movies/${movie.slug}`} 
       className={cn(
-        "group block bg-[#141414] rounded-[10px] overflow-hidden border border-[#1f1f1f] hover:border-popcorn-red transition-all duration-200 hover:scale-[1.03]",
+        "group block bg-[#141414] rounded-[10px] overflow-hidden border border-[#1f1f1f] hover:border-popcorn-red transition-all duration-200",
+        isFixed ? "w-[180px] min-w-[180px] max-w-[180px] shrink-0 grow-0 hover:scale-[1.04]" : "w-full hover:scale-[1.03]",
         className
       )}
     >
-      <div className="relative aspect-[2/3] w-full overflow-hidden">
+      <div className={cn(
+        "relative overflow-hidden",
+        isFixed ? "w-[180px] h-[270px]" : "aspect-[2/3] w-full"
+      )}>
         {movie.cover_image ? (
           <Image
             src={movie.cover_image}
             alt={movie.title}
             fill
-            className="object-cover object-top"
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-cover object-top block"
+            sizes={isFixed ? "180px" : "(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"}
           />
         ) : (
           <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
@@ -48,8 +55,11 @@ export default function MovieCard({ movie, className }: MovieCardProps) {
         </div>
       </div>
 
-      <div className="p-[10px_12px_12px]">
-        <h3 className="font-bold text-white text-[13px] line-clamp-1 group-hover:text-popcorn-red transition-colors mb-1 uppercase tracking-tight">
+      <div className="p-[10px_12px_12px] w-full">
+        <h3 className={cn(
+          "font-bold text-white group-hover:text-popcorn-red transition-colors mb-1 uppercase tracking-tight",
+          isFixed ? "text-[12px] whitespace-nowrap overflow-hidden text-overflow-ellipsis max-w-[156px]" : "text-[13px] line-clamp-1"
+        )}>
           {movie.title}
         </h3>
         {movie.imdb_rating && (

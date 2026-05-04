@@ -57,10 +57,11 @@ export default function MovieRow({ title, movies, viewMoreLink }: MovieRowProps)
         
         <div 
           ref={scrollRef}
-          className="flex flex-row overflow-x-auto gap-4 pb-3 no-scrollbar scroll-smooth"
+          className="flex flex-row overflow-x-auto gap-4 pb-2 scroll-smooth no-scrollbar"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {movies.map((movie) => (
-             <MovieCard key={movie.id} movie={movie} />
+             <MovieCard key={movie.id} movie={movie} variant="fixed" />
           ))}
         </div>
 
