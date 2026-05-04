@@ -32,15 +32,16 @@ export default async function MoviesListingPage({
   const { data: posts } = await query
 
   return (
-    <div className="bg-popcorn-dark min-h-screen text-white pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="bg-popcorn-dark min-h-screen text-white pt-12 pb-20 px-6 md:px-12 max-w-[1400px] mx-auto">
       {/* Header Section */}
-      <div className="flex flex-col mb-10">
-        <div className="flex items-center gap-4 mb-2">
-          <div className="w-1.5 h-10 bg-popcorn-red rounded-full" />
-          <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter" style={{ fontFamily: 'Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif' }}>
-            MOVIES
-          </h1>
-        </div>
+      <div className="mb-10">
+        <h1 className="text-[28px] font-[800] text-white uppercase tracking-[2px] leading-none mb-1">
+          MOVIES
+        </h1>
+        <p className="text-[#666] text-[13px] font-medium tracking-[1px] uppercase">
+          {posts?.length || 0} Movies
+        </p>
+        <div className="w-[40px] h-[3px] bg-[#E50914] rounded-[2px] mt-2 mb-6" />
       </div>
 
       {/* Filter Section */}
@@ -48,7 +49,7 @@ export default async function MoviesListingPage({
 
       {/* Grid Section */}
       {posts && posts.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-8 pb-20">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-20">
           {posts.map((post, index) => (
             <React.Fragment key={post.id}>
               <MovieCard movie={post} />

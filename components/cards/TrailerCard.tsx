@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Play } from 'lucide-react'
+import { format } from 'date-fns'
 import { Post } from '@/types'
 
 interface TrailerCardProps {
@@ -19,38 +20,30 @@ export default function TrailerCard({ post }: TrailerCardProps) {
   const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : post.cover_image
 
   return (
-    <Link href={`/trailers/${post.slug}`} className="group block">
-      <div className="space-y-4">
-        <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-popcorn-red/20">
-          {thumbnailUrl && (
-            <Image
-              src={thumbnailUrl}
-              alt={post.title}
-              fill
-              className="object-contain transition-transform duration-700 group-hover:scale-110"
-            />
-          )}
-          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-            <div className="w-16 h-16 bg-popcorn-red text-white rounded-full flex items-center justify-center shadow-2xl scale-90 group-hover:scale-100 transition-transform">
-              <Play size={32} fill="currentColor" />
-            </div>
-          </div>
-          
-          <div className="absolute bottom-4 left-4 right-4">
-             <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl inline-block">
-                <span className="text-[10px] font-black uppercase tracking-widest text-white">Trailer</span>
-             </div>
+    <Link href={`/trailers/${post.slug}`} className="group block bg-[#141414] rounded-[10px] overflow-hidden border border-[#1f1f1f] hover:border-popcorn-red transition-all duration-300">
+      <div className="relative aspect-video overflow-hidden">
+        {thumbnailUrl && (
+          <Image
+            src={thumbnailUrl}
+            alt={post.title}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        )}
+        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#E50914]/80 text-white rounded-full flex items-center justify-center shadow-2xl opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300">
+            <Play size={20} fill="white" />
           </div>
         </div>
-        
-        <div className="px-2 space-y-1">
-           <h3 className="text-xl font-black text-white italic uppercase tracking-tighter group-hover:text-popcorn-red transition-colors line-clamp-1">
-             {post.title}
-           </h3>
-           <p className="text-[10px] font-bold text-popcorn-secondary uppercase tracking-widest">
-             {post.language_tag} • {post.genre || 'Action'}
-           </p>
-        </div>
+      </div>
+      
+      <div className="p-4 space-y-1">
+         <h3 className="text-sm font-bold text-white group-hover:text-popcorn-red transition-colors line-clamp-1 uppercase tracking-tight">
+           {post.title}
+         </h3>
+         <p className="text-[12px] font-medium text-neutral-500">
+           {format(new Date(post.created_at), 'MMM dd, yyyy')}
+         </p>
       </div>
     </Link>
   )

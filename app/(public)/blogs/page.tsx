@@ -21,14 +21,16 @@ export default async function BlogsListingPage() {
   const count = posts?.length || 0
 
   return (
-    <div className="bg-popcorn-dark min-h-screen text-white pt-24 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-[900px] mx-auto">
-        <div className="mb-10 space-y-2">
-          <div className="flex items-center space-x-4">
-             <div className="h-10 w-1.5 bg-popcorn-red rounded-full" />
-             <h1 className="text-4xl md:text-5xl font-black italic !font-serif tracking-tighter uppercase">BLOGS</h1>
-          </div>
-          <p className="text-neutral-500 text-sm font-bold ml-6 uppercase tracking-widest">{count} Articles</p>
+    <div className="bg-popcorn-dark min-h-screen text-white pt-12 pb-20 px-6 md:px-12 max-w-[1400px] mx-auto">
+      <div className="max-w-[860px] mx-auto">
+        <div className="mb-10">
+          <h1 className="text-[28px] font-[800] text-white uppercase tracking-[2px] leading-none mb-1">
+            BLOGS
+          </h1>
+          <p className="text-[#666] text-[13px] font-medium tracking-[1px] uppercase">
+            {count} Articles
+          </p>
+          <div className="w-[40px] h-[3px] bg-[#E50914] rounded-[2px] mt-2 mb-6" />
         </div>
 
         {posts && posts.length > 0 ? (
