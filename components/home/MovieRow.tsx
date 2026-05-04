@@ -3,7 +3,6 @@
 import { useRef } from 'react'
 import Link from 'next/link'
 import MovieCard from '@/components/cards/MovieCard'
-import BlogCard from '@/components/cards/BlogCard'
 import { Post } from '@/types'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -11,10 +10,9 @@ interface MovieRowProps {
   title: string;
   movies: Post[];
   viewMoreLink?: string;
-  isBlog?: boolean;
 }
 
-export default function MovieRow({ title, movies, viewMoreLink, isBlog }: MovieRowProps) {
+export default function MovieRow({ title, movies, viewMoreLink }: MovieRowProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const scroll = (direction: 'left' | 'right') => {
@@ -59,16 +57,10 @@ export default function MovieRow({ title, movies, viewMoreLink, isBlog }: MovieR
         
         <div 
           ref={scrollRef}
-          className="flex overflow-x-auto overflow-y-hidden gap-6 pb-8 no-scrollbar snap-x scroll-smooth"
+          className="flex flex-row overflow-x-auto gap-4 pb-3 no-scrollbar scroll-smooth"
         >
-          {movies.map((post) => (
-            <div key={post.id} className={isBlog ? "min-w-[280px] md:min-w-[320px] snap-start" : "min-w-[180px] md:min-w-[240px] snap-start"}>
-              {isBlog ? (
-                <BlogCard post={post} />
-              ) : (
-                <MovieCard movie={post} />
-              )}
-            </div>
+          {movies.map((movie) => (
+             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
 

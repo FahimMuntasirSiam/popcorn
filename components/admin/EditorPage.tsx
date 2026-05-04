@@ -430,14 +430,21 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider text-[10px]">IMDb Rating</label>
+                <div className="flex items-center space-x-2 mb-1">
+                  <span className="bg-[#F5C518] text-black text-[9px] font-black px-1.5 py-0.5 rounded uppercase leading-none">IMDb</span>
+                  <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider text-[10px]">IMDb Rating</label>
+                </div>
                 <input 
-                  type="text"
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
                   value={imdbRating}
                   onChange={(e) => setImdbRating(e.target.value)}
                   className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-popcorn-red"
                   placeholder="e.g. 8.5"
                 />
+                <p className="text-[9px] text-neutral-600 italic mt-1 px-1">Out of 10 — from IMDb</p>
               </div>
 
               <div className="space-y-1">

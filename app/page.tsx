@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 import Hero from '@/components/home/Hero'
 import MovieRow from '@/components/home/MovieRow'
 import { Post } from '@/types'
 import AdUnit from '@/components/ui/AdUnit'
 import MovieCard from '@/components/cards/MovieCard'
 import BlogCard from '@/components/cards/BlogCard'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ChevronRight } from 'lucide-react'
 
 export default function Home() {
   const [featured, setFeatured] = useState<Post[]>([])
@@ -94,58 +95,6 @@ export default function Home() {
 
       <div className="space-y-24 mt-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        {/* Latest Uploads (4 cards) */}
-        <section className="space-y-8">
-           <div className="flex items-center space-x-4">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter">Latest Uploads</h2>
-              <div className="h-1 flex-1 bg-gradient-to-r from-popcorn-red to-transparent rounded-full" />
-           </div>
-           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {latest.map(post => (
-                post.category === 'blogs' ? (
-                  <BlogCard key={post.id} post={post} />
-                ) : (
-                  <MovieCard key={post.id} movie={post} />
-                )
-              ))}
-           </div>
-        </section>
-
-        <div className="space-y-4">
-          <AdUnit 
-            className="hidden md:flex" 
-            minHeight="90px"
-            code={`
-              <script type="text/javascript">
-                atOptions = {
-                  'key' : '64530885a0cbc7ae0904c3e6dfc4c192',
-                  'format' : 'iframe',
-                  'height' : 90,
-                  'width' : 728,
-                  'params' : {}
-                };
-              </script>
-              <script type="text/javascript" src="https://www.highperformanceformat.com/64530885a0cbc7ae0904c3e6dfc4c192/invoke.js"></script>
-            `} 
-          />
-          <AdUnit 
-            className="md:hidden flex" 
-            minHeight="50px"
-            code={`
-              <script type="text/javascript">
-                atOptions = {
-                  'key' : '2b58bfa05eeeaedde521d109142d97e3',
-                  'format' : 'iframe',
-                  'height' : 50,
-                  'width' : 320,
-                  'params' : {}
-                };
-              </script>
-              <script type="text/javascript" src="https://www.highperformanceformat.com/2b58bfa05eeeaedde521d109142d97e3/invoke.js"></script>
-            `} 
-          />
-        </div>
-
         {/* Movies Section */}
         <MovieRow 
           title="Trending Movies" 
@@ -154,12 +103,30 @@ export default function Home() {
         />
 
         {/* Blogs Section */}
-        <MovieRow 
-          title="Latest Blog Posts" 
-          movies={blogs} 
-          viewMoreLink="/blogs"
-          isBlog
-        />
+        <section className="space-y-8">
+           <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                 <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">Latest Blog Posts</h2>
+                 <div className="h-1 w-24 bg-gradient-to-r from-popcorn-red to-transparent rounded-full" />
+              </div>
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {blogs.slice(0, 6).map(post => (
+                <BlogCard key={post.id} post={post} />
+              ))}
+           </div>
+
+           <div className="flex justify-center pt-4">
+              <Link 
+                href="/blogs"
+                className="group flex items-center space-x-2 bg-white/5 hover:bg-popcorn-red text-white px-8 py-3 rounded-full border border-white/10 transition-all text-xs font-black uppercase tracking-widest shadow-xl"
+              >
+                <span>View More</span>
+                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+           </div>
+        </section>
 
         <div className="space-y-4">
           <AdUnit 

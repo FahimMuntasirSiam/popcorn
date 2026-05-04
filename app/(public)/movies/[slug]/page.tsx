@@ -9,6 +9,7 @@ import ReviewSection from '@/components/interactions/ReviewSection'
 import BookmarkButton from '@/components/interactions/BookmarkButton'
 import AdUnit from '@/components/ui/AdUnit'
 import { Metadata } from 'next'
+import { cn } from '@/lib/utils'
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const supabase = createClient()
@@ -157,21 +158,44 @@ export default async function MovieDetailPage({
              
              <h1 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight leading-none drop-shadow-2xl">{movie.title}</h1>
              
-             <div className="flex items-center space-x-6 text-sm text-popcorn-secondary font-bold">
-                <div className="flex items-center space-x-4">
-                   {movie.imdb_rating > 0 && (
-                     <div className="flex items-center space-x-2.5 bg-black/60 px-3 py-1.5 rounded-2xl border border-white/5 group hover:border-yellow-400/30 transition-all duration-500">
-                        <span className="text-black font-black text-[9px] tracking-tight bg-yellow-400 px-1.5 py-1 rounded-lg leading-none shadow-[0_0_15px_rgba(250,204,21,0.15)] uppercase">IMDb</span>
-                        <span className="text-white text-base font-black tracking-tighter leading-none">{movie.imdb_rating.toFixed(1)}</span>
-                     </div>
-                   )}
-                </div>
+             <div className="flex flex-wrap items-center gap-8 py-2">
+                {movie.imdb_rating && (
+                   <div className="flex flex-col">
+                      <div className="flex items-center gap-2.5">
+                         <span className="bg-[#F5C518] text-black text-[13px] font-black px-2 py-0.5 rounded leading-none">IMDb</span>
+                         <span className="text-white text-xl font-black tracking-tighter">★ {movie.imdb_rating.toFixed(1)}<span className="text-white/40 text-sm ml-0.5">/10</span></span>
+                      </div>
+                      <span className="text-neutral-500 text-[10px] font-black uppercase tracking-widest mt-1.5 ml-1">IMDb Rating</span>
+                   </div>
+                )}
                 
-                <div className="flex items-center space-x-2">
-                   <Calendar size={18} className="text-popcorn-red" />
-                   <span className="uppercase tracking-widest text-xs">{new Date(movie.created_at).getFullYear()}</span>
-                </div>
-                <div className="ml-auto">
+                {movie.imdb_rating && (movie.avg_rating || movie.total_reviews > 0) && (
+                   <div className="hidden sm:block w-[1px] h-10 bg-white/10" />
+                )}
+
+                {(movie.avg_rating || movie.total_reviews > 0) && (
+                   <div className="flex flex-col">
+                      <div className="flex items-center gap-2.5">
+                         <div className="flex text-[#F5C518]">
+                            {[...Array(5)].map((_, i) => (
+                               <Star 
+                                 key={i} 
+                                 size={16} 
+                                 className={cn("fill-current", i < Math.round((movie.avg_rating || 0) / 2) ? "opacity-100" : "opacity-20")} 
+                               />
+                            ))}
+                         </div>
+                         <span className="text-white text-xl font-black tracking-tighter">{((movie.avg_rating || 0) / 2).toFixed(1)}</span>
+                      </div>
+                      <span className="text-neutral-500 text-[10px] font-black uppercase tracking-widest mt-1.5 ml-1">User Rating ({movie.total_reviews || 0})</span>
+                   </div>
+                )}
+
+                <div className="flex items-center space-x-6 ml-auto">
+                   <div className="flex items-center space-x-2 text-white/60">
+                      <Calendar size={18} className="text-popcorn-red" />
+                      <span className="uppercase tracking-widest text-xs font-black">{new Date(movie.created_at).getFullYear()}</span>
+                   </div>
                    <BookmarkButton postId={movie.id} />
                 </div>
              </div>

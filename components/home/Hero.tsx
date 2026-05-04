@@ -27,24 +27,28 @@ export default function Hero({ movies }: HeroProps) {
   const prev = () => setCurrent((prev) => (prev - 1 + movies.length) % movies.length)
 
   return (
-    <div className="relative w-full min-h-[90vh] md:h-[100vh] overflow-hidden bg-popcorn-dark flex flex-col items-center justify-center pt-32 pb-12">
+    <div className="relative w-full min-h-[420px] lg:h-[580px] overflow-hidden bg-popcorn-dark flex flex-col items-center justify-center pt-20 pb-10">
       {/* Fixed Premium Backdrop */}
       <div className="absolute inset-0">
         <Image
           src="/premium_hero.png"
           alt="Premium Banner"
           fill
-          className="object-cover opacity-50"
+          className="object-cover object-center opacity-50"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-popcorn-dark via-popcorn-dark/20 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-popcorn-dark/60 via-transparent to-transparent" />
+        <div 
+          className="absolute inset-0" 
+          style={{
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 50%, rgba(10,10,10,1) 100%)'
+          }} 
+        />
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center space-y-16">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center">
         
         {/* Cover Flow Carousel */}
-        <div className="relative w-full h-[350px] md:h-[450px] flex items-center justify-center">
+        <div className="relative w-full h-[300px] lg:h-[350px] flex items-center justify-center mb-6">
            {movies.map((movie, idx) => {
              // Calculate position relative to current
              let offset = idx - current;
@@ -56,23 +60,36 @@ export default function Hero({ movies }: HeroProps) {
              const isFar = Math.abs(offset) === 2;
 
              return (
-               <div 
+               <Link 
                  key={movie.id}
-                 onClick={() => setCurrent(idx)}
+                 href={`/movies/${movie.slug}`}
+                 onClick={(e) => {
+                    if (!isCenter) {
+                      e.preventDefault();
+                      setCurrent(idx);
+                    }
+                 }}
                  className={cn(
-                    "absolute transition-all duration-700 ease-out cursor-pointer group",
-                    isCenter ? "z-30 scale-100 opacity-100" : 
-                    isNear ? "z-20 scale-85 opacity-60" : 
-                    isFar ? "z-10 scale-70 opacity-20" : "opacity-0 pointer-events-none"
+                    "absolute transition-all duration-300 ease-in-out cursor-pointer group flex items-center justify-center",
+                    isCenter ? "z-[10] opacity-100" : 
+                    isNear ? "z-[5] opacity-70" : 
+                    isFar ? "z-[1] opacity-40" : "opacity-0 pointer-events-none"
                  )}
                  style={{
-                    transform: `translateX(${offset * (typeof window !== 'undefined' && window.innerWidth < 768 ? 100 : 220)}px)`,
+                    transform: `translateX(${offset * (typeof window !== 'undefined' && window.innerWidth < 768 ? 130 : 200)}px)`,
                  }}
                >
-                 <div className={cn(
-                    "relative aspect-[2/3] w-44 md:w-60 rounded-3xl overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] border-2 transition-all duration-500",
-                    isCenter ? "border-popcorn-red shadow-popcorn-red/30" : "border-white/5 hover:border-white/20"
-                 )}>
+                 <div 
+                    className={cn(
+                      "relative overflow-hidden transition-all duration-300",
+                      isCenter ? "border-2 border-popcorn-red shadow-[0_20px_60px_rgba(0,0,0,0.8)]" : "border border-white/5"
+                    )}
+                    style={{
+                      width: isCenter ? '180px' : isNear ? '150px' : '120px',
+                      height: isCenter ? '270px' : isNear ? '225px' : '180px',
+                      borderRadius: isCenter ? '12px' : isNear ? '10px' : '8px'
+                    }}
+                 >
                     {movie.cover_image && (
                       <Image 
                         src={movie.cover_image} 
@@ -81,70 +98,65 @@ export default function Hero({ movies }: HeroProps) {
                         className="object-cover"
                       />
                     )}
+                    {/* Hover Overlay */}
+                    <div className={cn(
+                      "absolute inset-0 bg-popcorn-red/15 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-4",
+                    )}>
+                       <span className="bg-black/60 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10">▶ View</span>
+                    </div>
+
                     <div className={cn(
                       "absolute inset-0 bg-black/40 transition-opacity",
                       isCenter ? "opacity-0" : "opacity-60"
                     )} />
                  </div>
-               </div>
+               </Link>
              )
            })}
 
            {/* Controls */}
            <button 
              onClick={(e) => { e.stopPropagation(); prev(); }}
-             className="absolute left-4 md:left-10 z-40 p-4 rounded-full bg-white/5 hover:bg-popcorn-red text-white transition-all backdrop-blur-md border border-white/10"
+             className="absolute left-4 md:left-10 z-40 p-2.5 rounded-full bg-white/5 hover:bg-popcorn-red text-white transition-all backdrop-blur-md border border-white/10"
            >
-             <ChevronLeft size={24} />
+             <ChevronLeft size={18} />
            </button>
            <button 
              onClick={(e) => { e.stopPropagation(); next(); }}
-             className="absolute right-4 md:right-10 z-40 p-4 rounded-full bg-white/5 hover:bg-popcorn-red text-white transition-all backdrop-blur-md border border-white/10"
+             className="absolute right-4 md:right-10 z-40 p-2.5 rounded-full bg-white/5 hover:bg-popcorn-red text-white transition-all backdrop-blur-md border border-white/10"
            >
-             <ChevronRight size={24} />
+             <ChevronRight size={18} />
            </button>
         </div>
 
         {/* Active Movie Info */}
-        <div className="text-center space-y-6 max-w-4xl px-4 animate-in fade-in zoom-in duration-500">
-           <div className="flex flex-col items-center space-y-4">
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-2xl">
-                {activeMovie?.title}
-              </h2>
-              <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.2em] text-popcorn-secondary">
-                 <span className="text-popcorn-red">{activeMovie?.category || 'Movie'}</span>
-                 <span className="w-1 h-1 rounded-full bg-white/20" />
-                 <span>{activeMovie?.language_tag || 'English'}</span>
-                 <span className="w-1 h-1 rounded-full bg-white/20" />
-                 <div className="flex items-center text-popcorn-gold">
-                    <Star size={12} className="fill-current mr-1" />
-                    <span>7.5</span>
-                 </div>
+        <div className="text-center w-full px-4 pt-2 pb-10 animate-in fade-in zoom-in duration-500 flex flex-col items-center">
+           <div className="flex flex-col items-center">
+              <Link href={`/movies/${activeMovie?.slug}`} className="group/title">
+                <h2 className="text-[20px] lg:text-[28px] font-bold text-white tracking-normal uppercase not-italic leading-[1.3] drop-shadow-2xl max-w-[600px] text-center mb-1 group-hover/title:text-popcorn-red transition-colors duration-200 line-clamp-2">
+                  {activeMovie?.title}
+                </h2>
+              </Link>
+              
+              <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[2px] mt-2 text-[#555]">
+                 <span style={{ color: '#E50914' }}>{activeMovie?.category || 'Movie'}</span>
+                 <span>·</span>
+                 <span style={{ color: '#aaaaaa' }}>{activeMovie?.language_tag || 'English'}</span>
+                 {activeMovie?.imdb_rating && (
+                   <>
+                     <span>·</span>
+                     <div className="flex items-center" style={{ color: '#F5C518' }}>
+                        <span className="mr-1">★</span>
+                        <span>{activeMovie.imdb_rating.toFixed(1)}</span>
+                     </div>
+                   </>
+                 )}
               </div>
-           </div>
-
-           <p className="text-gray-400 text-sm md:text-base font-medium leading-relaxed max-w-2xl mx-auto line-clamp-2">
-             {activeMovie?.meta_description}
-           </p>
-
-           <div className="flex justify-center gap-4 pt-4">
-              <Link 
-                href={`/movies/${activeMovie?.slug}`}
-                className="bg-white text-popcorn-dark px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest flex items-center hover:bg-popcorn-red hover:text-white transition-all shadow-2xl text-[10px]"
-              >
-                <Play fill="currentColor" size={14} className="mr-2" />
-                Read More
-              </Link>
-              <Link 
-                href={`/download/${activeMovie?.slug}`}
-                className="bg-white/10 backdrop-blur-xl text-white border border-white/20 px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest flex items-center hover:bg-white/20 transition-all shadow-2xl text-[10px]"
-              >
-                <Download size={14} className="mr-2" />
-                Get Link
-              </Link>
            </div>
         </div>
       </div>
     </div>
+
+
   )
 }
