@@ -92,114 +92,102 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const isUserAdmin = user && ADMIN_EMAILS.includes(user.email)
 
   return (
-    <div className="space-y-12 py-12 border-t border-white/10">
-      <div className="flex items-center space-x-3">
-        <div className="bg-popcorn-red/10 p-2 rounded-lg">
-          <MessageSquare className="text-popcorn-red" size={24} />
-        </div>
-        <h3 className="text-2xl font-black text-white uppercase tracking-tight">
-          Comments <span className="text-popcorn-red ml-1">{comments.length}</span>
-        </h3>
-      </div>
-
+    <div className="space-y-12">
       {/* Comment Form */}
-      <div className="bg-popcorn-card border border-white/5 rounded-3xl p-1 shadow-2xl relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-popcorn-red/20 to-transparent rounded-[26px] blur opacity-25 group-hover:opacity-50 transition-opacity" />
-        <div className="relative bg-[#0d0d0d] rounded-[22px] p-6">
-          {user ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden relative border-2 border-white/10 shrink-0">
-                  {user.user_metadata?.avatar_url ? (
-                    <Image src={user.user_metadata.avatar_url} alt="You" fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
-                      <UserIcon size={24} className="text-neutral-500" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <textarea
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Join the discussion... (Press Enter to share)"
-                    className="w-full bg-transparent border-none text-white placeholder:text-neutral-700 focus:outline-none min-h-[100px] py-2 resize-none text-lg font-medium"
-                    required
-                  />
-                </div>
+      <div className="relative">
+        {user ? (
+          <form onSubmit={handleSubmit} className="bg-[#141414] border border-[#222] rounded-xl p-6 space-y-4">
+            <div className="flex items-start space-x-4">
+              <div className="w-10 h-10 rounded-full overflow-hidden relative border border-white/10 shrink-0">
+                {user.user_metadata?.avatar_url ? (
+                  <Image src={user.user_metadata.avatar_url} alt="You" fill className="object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
+                    <UserIcon size={20} className="text-neutral-500" />
+                  </div>
+                )}
               </div>
-              <div className="flex justify-end pt-4 border-t border-white/5">
-                <button
-                  type="submit"
-                  disabled={submitting || !content.trim()}
-                  className="bg-popcorn-red text-white flex items-center justify-center space-x-3 px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-popcorn-red transition-all transform active:scale-95 disabled:opacity-50 shadow-2xl"
-                >
-                  {submitting ? <Loader2 className="animate-spin" size={18} /> : <span>Post Comment</span>}
-                </button>
+              <div className="flex-1">
+                <textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="What are your thoughts?"
+                  className="w-full bg-transparent border-none text-white placeholder:text-neutral-600 focus:outline-none min-h-[80px] py-2 resize-none text-[15px]"
+                  required
+                />
               </div>
-            </form>
-          ) : (
-            <div className="text-center py-10 space-y-6">
-               <div className="space-y-2">
-                 <p className="text-white text-xl font-black uppercase tracking-tight">Login with Google to comment</p>
-                 <p className="text-popcorn-secondary text-sm font-medium">Join the community and share your thoughts</p>
-               </div>
-               <Link 
-                href={`/auth/login?next=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '')}`}
-                className="inline-flex items-center space-x-3 bg-popcorn-red text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-popcorn-red transition-all shadow-2xl transform hover:-translate-y-1"
-               >
-                 Sign in with Google
-               </Link>
             </div>
-          )}
-        </div>
+            <div className="flex justify-end pt-4 border-t border-[#1f1f1f]">
+              <button
+                type="submit"
+                disabled={submitting || !content.trim()}
+                className="bg-popcorn-red text-white flex items-center justify-center space-x-2 px-6 py-2 rounded-lg font-bold uppercase tracking-widest text-[11px] hover:bg-white hover:text-popcorn-red transition-all transform active:scale-95 disabled:opacity-50"
+              >
+                {submitting ? <Loader2 className="animate-spin" size={14} /> : <span>Post Comment</span>}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="bg-[#141414] border border-[#222] rounded-xl p-8 text-center">
+             <div className="max-w-[320px] mx-auto space-y-2 mb-6">
+               <h4 className="text-white text-[16px] font-[600]">Sign in to join the discussion</h4>
+               <p className="text-[#666] text-[13px]">Login with Google to share your thoughts with the community</p>
+             </div>
+             <Link 
+              href={`/auth/login?next=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '')}`}
+              className="inline-flex items-center space-x-3 bg-popcorn-red text-white px-8 py-3 rounded-lg font-bold uppercase tracking-widest text-[11px] hover:bg-white hover:text-popcorn-red transition-all shadow-xl"
+             >
+               Sign in with Google
+             </Link>
+          </div>
+        )}
       </div>
 
       {/* Comments List */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         {loading ? (
-          [...Array(3)].map((_, i) => (
-            <div key={i} className="h-40 bg-white/5 animate-pulse rounded-3xl border border-white/5" />
+          [...Array(2)].map((_, i) => (
+            <div key={i} className="h-24 bg-white/5 animate-pulse rounded-xl" />
           ))
         ) : comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment.id} className="group relative flex space-x-6 p-8 bg-popcorn-card border border-white/5 rounded-3xl hover:border-popcorn-red/30 transition-all duration-500 shadow-xl">
-               <div className="w-14 h-14 rounded-2xl overflow-hidden relative border-2 border-white/10 shrink-0 transform group-hover:rotate-3 transition-transform">
+            <div key={comment.id} className="group relative flex space-x-4 p-5 bg-[#141414] border border-[#1f1f1f] rounded-xl transition-all">
+               <div className="w-10 h-10 rounded-full overflow-hidden relative border border-white/10 shrink-0">
                   {comment.user_avatar ? (
                     <Image src={comment.user_avatar} alt={comment.user_name} fill className="object-cover" />
                   ) : (
                     <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
-                      <UserIcon size={28} className="text-neutral-700" />
+                      <UserIcon size={20} className="text-neutral-700" />
                     </div>
                   )}
                </div>
-               <div className="flex-1 space-y-3">
+               <div className="flex-1 space-y-2">
                   <div className="flex items-center justify-between">
-                     <div className="flex flex-col">
-                        <span className="font-black text-white uppercase tracking-tight text-lg">{comment.user_name}</span>
-                        <span className="text-[10px] font-bold text-popcorn-secondary uppercase tracking-[0.2em]">
-                          {format(new Date(comment.created_at), 'MMMM dd, yyyy')}
+                     <div className="flex items-center gap-3">
+                        <span className="font-bold text-white text-[14px]">{comment.user_name}</span>
+                        <span className="text-[11px] font-medium text-[#666]">
+                          {format(new Date(comment.created_at), 'MMM dd, yyyy')}
                         </span>
                      </div>
                      {(isUserAdmin || (user && user.id === comment.user_id)) && (
                        <button 
                         onClick={() => handleDelete(comment.id)}
-                        className="opacity-0 group-hover:opacity-100 p-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-lg"
+                        className="opacity-0 group-hover:opacity-100 p-2 text-[#666] hover:text-popcorn-red transition-all"
                         title="Delete comment"
                        >
-                         <Trash2 size={18} />
+                         <Trash2 size={14} />
                        </button>
                      )}
                   </div>
-                  <p className="text-gray-400 leading-relaxed text-lg font-medium">{comment.content}</p>
+                  <p className="text-[#d1d1d1] leading-relaxed text-[15px]">{comment.content}</p>
                </div>
             </div>
           ))
         ) : (
-          <div className="text-center py-20 bg-white/2 rounded-3xl border-2 border-dashed border-white/10">
-             <MessageSquare size={48} className="mx-auto mb-4 text-neutral-800" />
-             <p className="text-popcorn-secondary font-black uppercase tracking-widest text-xs">No comments yet</p>
-             <p className="text-neutral-700 text-sm mt-1">Be the first to start the discussion!</p>
+          <div className="text-center py-12">
+             <div className="text-[32px] mb-3">💬</div>
+             <p className="text-white text-[15px] font-[500] mb-1">No comments yet</p>
+             <p className="text-[#666] text-[13px]">Be the first to start the discussion!</p>
           </div>
         )}
       </div>
