@@ -32,6 +32,7 @@ import { slugify } from '@/lib/slugify'
 import { Post, PostCategory, PostStatus, LanguageTag, DownloadLink } from '@/types'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { useLanguages } from '@/components/providers/LanguageProvider'
 
 interface EditorPageProps {
   initialData?: Post;
@@ -41,6 +42,7 @@ interface EditorPageProps {
 export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const router = useRouter()
   const supabase = createClient()
+  const { languages } = useLanguages()
 
   // Form State
   const [title, setTitle] = useState(initialData?.title || '')
@@ -394,20 +396,18 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                  </div>
                  <div className="space-y-1">
                    <label className="text-xs font-bold text-popcorn-secondary uppercase tracking-wider text-[10px]">Language</label>
-                   <input 
-                    list="languages"
+                   <select 
                     value={languageTag}
                     onChange={(e) => setLanguageTag(e.target.value)}
-                    placeholder="e.g. English, Chinese..."
                     className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-popcorn-red"
-                   />
-                   <datalist id="languages">
-                     <option value="english" />
-                     <option value="bangla" />
-                     <option value="hindi" />
-                     <option value="chinese" />
-                     <option value="anime" />
-                   </datalist>
+                   >
+                     <option value="">Select Language</option>
+                     {languages.map(lang => (
+                       <option key={lang.slug} value={lang.slug}>
+                         {lang.flag} {lang.name}
+                       </option>
+                     ))}
+                   </select>
                  </div>
               </div>
 

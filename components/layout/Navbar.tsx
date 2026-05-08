@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { User } from '@supabase/supabase-js'
 import { cn } from '@/lib/utils'
+import { useLanguages } from '@/components/providers/LanguageProvider'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,6 +23,7 @@ export default function Navbar() {
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const currentLang = searchParams.get('lang') || ''
+  const { languages } = useLanguages()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,13 +93,6 @@ export default function Navbar() {
     router.refresh()
   }
 
-  const movieLanguages = [
-    { name: 'All Movies', href: '/movies', value: '', icon: '🎬' },
-    { name: 'English', href: '/movies?lang=english', value: 'english', icon: '🎬' },
-    { name: 'বাংলা', href: '/movies?lang=bangla', value: 'bangla', icon: '🎬' },
-    { name: 'Hindi', href: '/movies?lang=hindi', value: 'hindi', icon: '🎬' },
-  ]
-
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0]
   const userAvatar = user?.user_metadata?.avatar_url
 
@@ -142,36 +137,33 @@ export default function Navbar() {
                        <p className="text-[10px] font-black text-[#555] uppercase tracking-[2px] px-4 py-2 pointer-events-none">Browse by Language</p>
                        
                        <div className="flex flex-col">
-                          {movieLanguages.map((l) => (
+                          <Link 
+                            href="/movies"
+                            className={cn(
+                              "px-4 py-2.5 text-sm transition-all duration-200",
+                              currentLang === '' 
+                                ? "text-popcorn-red font-bold" 
+                                : "text-[#aaa] hover:text-white hover:bg-[#1f1f1f]"
+                            )}
+                            onClick={() => setIsMoviesOpen(false)}
+                          >
+                             All Movies
+                          </Link>
+                          {languages.map((l) => (
                             <Link 
-                              key={l.name}
-                              href={l.href}
+                              key={l.slug}
+                              href={`/movies?lang=${l.slug}`}
                               className={cn(
                                 "px-4 py-2.5 text-sm transition-all duration-200",
-                                currentLang === l.value 
+                                currentLang === l.slug 
                                   ? "text-popcorn-red font-bold" 
                                   : "text-[#aaa] hover:text-white hover:bg-[#1f1f1f]"
                               )}
                               onClick={() => setIsMoviesOpen(false)}
                             >
-                               {l.name}
+                               {l.flag} {l.name}
                             </Link>
                           ))}
-
-                          <div className="h-[1px] bg-[#222] my-1" />
-
-                          <Link 
-                            href="/movies?lang=anime"
-                            className={cn(
-                              "px-4 py-2.5 text-sm transition-all duration-200",
-                              currentLang === 'anime'
-                                ? "text-popcorn-red font-bold"
-                                : "text-[#aaa] hover:text-white hover:bg-[#1f1f1f]"
-                            )}
-                            onClick={() => setIsMoviesOpen(false)}
-                          >
-                             Anime
-                          </Link>
                        </div>
                     </div>
                   )}
@@ -301,30 +293,29 @@ export default function Navbar() {
             <div className="border-b border-white/5 py-2">
                <p className="px-3 text-[10px] font-black text-popcorn-secondary uppercase tracking-[0.2em] mb-2">Movies</p>
                <div className="grid grid-cols-2 gap-2 px-3">
-                  {movieLanguages.map((l) => (
-                    <Link
-                      key={l.name}
-                      href={l.href}
-                      className={cn(
-                        "p-3 rounded-lg text-xs font-bold transition-all",
-                        currentLang === l.value ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"
-                      )}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {l.name}
-                    </Link>
-                  ))}
                   <Link
-                    href="/movies?lang=anime"
+                    href="/movies"
                     className={cn(
-                      "col-span-2 p-3 rounded-lg text-xs font-bold transition-all flex items-center gap-2",
-                      currentLang === 'anime' ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"
+                      "p-3 rounded-lg text-xs font-bold transition-all",
+                      currentLang === '' ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"
                     )}
                     onClick={() => setIsOpen(false)}
                   >
-                    <span>🎌</span>
-                    <span>Anime Movies</span>
+                    All Movies
                   </Link>
+                  {languages.map((l) => (
+                    <Link
+                      key={l.slug}
+                      href={`/movies?lang=${l.slug}`}
+                      className={cn(
+                        "p-3 rounded-lg text-xs font-bold transition-all",
+                        currentLang === l.slug ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"
+                      )}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {l.flag} {l.name}
+                    </Link>
+                  ))}
                </div>
             </div>
 

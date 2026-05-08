@@ -3,6 +3,16 @@ export type LanguageTag = string;
 
 export type PostStatus = 'draft' | 'published';
 
+export type Language = {
+  id: string;
+  name: string;
+  slug: string;
+  flag: string | null;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+};
+
 export type DownloadLink = {
   label: string;
   slug: string;
@@ -74,6 +84,11 @@ export type Database = {
         Row: Review;
         Insert: Omit<Review, 'id' | 'created_at'>;
         Update: Partial<Omit<Review, 'id' | 'created_at'>>;
+      };
+      languages: {
+        Row: Language;
+        Insert: Omit<Language, 'id' | 'created_at'>;
+        Update: Partial<Omit<Language, 'id' | 'created_at'>>;
       };
     };
   };

@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { LanguageProvider } from "@/components/providers/LanguageProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -92,12 +93,14 @@ export default function RootLayout({
           strategy="afterInteractive"
           src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
         />
-        <Suspense fallback={<div className="h-16 bg-popcorn-dark" />}>
-          <Navbar />
-        </Suspense>
-        <main className="grow">
-          {children}
-        </main>
+        <LanguageProvider>
+          <Suspense fallback={<div className="h-16 bg-popcorn-dark" />}>
+            <Navbar />
+          </Suspense>
+          <main className="grow">
+            {children}
+          </main>
+        </LanguageProvider>
         <Footer />
       </body>
     </html>

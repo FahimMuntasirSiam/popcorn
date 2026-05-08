@@ -9,7 +9,8 @@ import {
   Image as ImageIcon, 
   PlusCircle,
   Home,
-  LogOut
+  LogOut,
+  Globe
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -30,6 +31,7 @@ export default function Sidebar() {
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'All Posts', href: '/admin/posts', icon: FileText },
     { name: 'Comments', href: '/admin/comments', icon: MessageSquare },
+    { name: 'Languages', href: '/admin/languages', icon: Globe },
     { name: 'Media', href: '/admin/media', icon: ImageIcon },
   ]
 
