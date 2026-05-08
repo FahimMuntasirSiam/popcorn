@@ -35,7 +35,7 @@ export default function Hero({ movies }: HeroProps) {
   }, [movies.length])
 
   if (!movies.length || !movies[current]) return null
-  const activeMovie = movies[current]
+
 
   return (
     <div 
@@ -150,31 +150,7 @@ export default function Hero({ movies }: HeroProps) {
            </button>
         </div>
 
-        {/* Active Movie Info */}
-        <div className="text-center w-full px-4 pt-2 pb-0 animate-in fade-in zoom-in duration-500 flex flex-col items-center">
-           <div className="flex flex-col items-center">
-              <Link href={`/movies/${activeMovie?.slug}`} className="group/title">
-                <h2 className="text-[20px] lg:text-[28px] font-bold text-white tracking-normal uppercase not-italic leading-[1.3] drop-shadow-2xl max-w-[600px] text-center mb-1 group-hover/title:text-popcorn-red transition-colors duration-200 line-clamp-2">
-                  {activeMovie?.title}
-                </h2>
-              </Link>
-              
-              <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[2px] mt-2 text-[#555]">
-                 <span style={{ color: '#E50914' }}>{activeMovie?.category || 'Movie'}</span>
-                 <span>·</span>
-                 <span style={{ color: '#aaaaaa' }}>{activeMovie?.language_tag || 'English'}</span>
-                 {activeMovie?.imdb_rating && (
-                   <>
-                     <span>·</span>
-                     <div className="flex items-center" style={{ color: '#F5C518' }}>
-                        <span className="mr-1">★</span>
-                        <span>{activeMovie.imdb_rating.toFixed(1)}</span>
-                     </div>
-                   </>
-                 )}
-              </div>
-           </div>
-        </div>
+
       </div>
     </div>
 
