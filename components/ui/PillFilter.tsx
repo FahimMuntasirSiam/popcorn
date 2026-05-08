@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useLanguages } from '@/components/providers/LanguageProvider'
+import React, { useState, useEffect } from 'react'
 
 interface PillFilterProps {
   count: number;
@@ -14,9 +15,9 @@ export default function PillFilter({ count, category = 'movies' }: PillFilterPro
   const searchParams = useSearchParams()
   const currentLang = searchParams.get('lang') || ''
   const { languages } = useLanguages()
-  const [availableLangSlugs, setAvailableLangSlugs] = React.useState<string[]>([])
+  const [availableLangSlugs, setAvailableLangSlugs] = useState<string[]>([])
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchAvailableLanguages = async () => {
       const { createClient } = await import('@/lib/supabase/client')
       const supabase = createClient()
