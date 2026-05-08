@@ -134,8 +134,6 @@ export default function Navbar() {
                   {/* Simplified Text Dropdown */}
                   {isMoviesOpen && (
                     <div className="absolute top-full left-0 w-[180px] bg-[#141414] border border-[#222] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.6)] py-2 animate-in fade-in slide-in-from-top-1 duration-200 z-50">
-                       <p className="text-[10px] font-black text-[#555] uppercase tracking-[2px] px-4 py-2 pointer-events-none">Browse by Language</p>
-                       
                        <div className="flex flex-col">
                           <Link 
                             href="/movies"
