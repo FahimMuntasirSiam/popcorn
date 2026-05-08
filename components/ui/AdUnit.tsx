@@ -32,8 +32,22 @@ class AdErrorBoundary extends React.Component<{ children: React.ReactNode }, { h
 
 const AdUnitContent = ({ code, className, minHeight = '50px' }: AdUnitProps) => {
   const adRef = React.useRef<HTMLDivElement>(null)
+  const [isAdmin, setIsAdmin] = React.useState(false)
+  
+  React.useEffect(() => {
+    const checkAdmin = async () => {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
+      if (data?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+        setIsAdmin(true)
+      }
+    }
+    checkAdmin()
+  }, [])
 
   React.useEffect(() => {
+    if (isAdmin) return
     if (adRef.current) {
       adRef.current.innerHTML = ''
       
@@ -61,6 +75,8 @@ const AdUnitContent = ({ code, className, minHeight = '50px' }: AdUnitProps) => 
       }
     }
   }, [code])
+
+  if (isAdmin) return null
 
   return (
     <div 

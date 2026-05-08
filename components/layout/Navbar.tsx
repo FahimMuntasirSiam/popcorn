@@ -24,6 +24,33 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
   const currentLang = searchParams.get('lang') || ''
   const { languages } = useLanguages()
+  const [movieLangSlugs, setMovieLangSlugs] = useState<string[]>([])
+  const [webSeriesLangSlugs, setWebSeriesLangSlugs] = useState<string[]>([])
+  const [isWebSeriesOpen, setIsWebSeriesOpen] = useState(false)
+
+  useEffect(() => {
+    const fetchAvailableLangs = async () => {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      
+      // Fetch Movies Langs
+      const { data: moviesData } = await supabase
+        .from('posts')
+        .select('language_tag')
+        .eq('category', 'movies')
+        .eq('status', 'published')
+      if (moviesData) setMovieLangSlugs(Array.from(new Set(moviesData.map(p => p.language_tag))))
+
+      // Fetch Web Series Langs
+      const { data: webSeriesData } = await supabase
+        .from('posts')
+        .select('language_tag')
+        .eq('category', 'web-series')
+        .eq('status', 'published')
+      if (webSeriesData) setWebSeriesLangSlugs(Array.from(new Set(webSeriesData.map(p => p.language_tag))))
+    }
+    fetchAvailableLangs()
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -147,7 +174,9 @@ export default function Navbar() {
                           >
                              All Movies
                           </Link>
-                          {languages.map((l) => (
+                          {languages
+                            .filter(l => movieLangSlugs.includes(l.slug))
+                            .map((l) => (
                             <Link 
                               key={l.slug}
                               href={`/movies?lang=${l.slug}`}
@@ -158,6 +187,59 @@ export default function Navbar() {
                                   : "text-[#aaa] hover:text-white hover:bg-[#1f1f1f]"
                               )}
                               onClick={() => setIsMoviesOpen(false)}
+                            >
+                               {l.flag} {l.name}
+                            </Link>
+                          ))}
+                       </div>
+                    </div>
+                  )}
+                </div>
+
+                <div 
+                  className="relative h-16 flex items-center"
+                  onMouseEnter={() => setIsWebSeriesOpen(true)}
+                  onMouseLeave={() => setIsWebSeriesOpen(false)}
+                >
+                  <Link
+                    href="/web-series"
+                    className={cn(
+                      "text-popcorn-secondary hover:text-popcorn-red px-3 py-2 rounded-md text-sm font-bold transition-all flex items-center space-x-1",
+                      isWebSeriesOpen && "text-popcorn-red"
+                    )}
+                  >
+                    <span>Web Series</span>
+                    <ChevronDown size={14} className={cn("transition-transform duration-200", isWebSeriesOpen && "rotate-180")} />
+                  </Link>
+
+                  {isWebSeriesOpen && (
+                    <div className="absolute top-full left-0 w-[180px] bg-[#141414] border border-[#222] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.6)] py-2 animate-in fade-in slide-in-from-top-1 duration-200 z-50">
+                       <div className="flex flex-col">
+                          <Link 
+                            href="/web-series"
+                            className={cn(
+                              "px-4 py-2.5 text-sm transition-all duration-200",
+                              currentLang === '' 
+                                ? "text-popcorn-red font-bold" 
+                                : "text-[#aaa] hover:text-white hover:bg-[#1f1f1f]"
+                            )}
+                            onClick={() => setIsWebSeriesOpen(false)}
+                          >
+                             All Web Series
+                          </Link>
+                          {languages
+                            .filter(l => webSeriesLangSlugs.includes(l.slug))
+                            .map((l) => (
+                            <Link 
+                              key={l.slug}
+                              href={`/web-series?lang=${l.slug}`}
+                              className={cn(
+                                "px-4 py-2.5 text-sm transition-all duration-200",
+                                currentLang === l.slug 
+                                  ? "text-popcorn-red font-bold" 
+                                  : "text-[#aaa] hover:text-white hover:bg-[#1f1f1f]"
+                              )}
+                              onClick={() => setIsWebSeriesOpen(false)}
                             >
                                {l.flag} {l.name}
                             </Link>
@@ -301,10 +383,43 @@ export default function Navbar() {
                   >
                     All Movies
                   </Link>
-                  {languages.map((l) => (
+                  {languages
+                    .filter(l => movieLangSlugs.includes(l.slug))
+                    .map((l) => (
                     <Link
                       key={l.slug}
                       href={`/movies?lang=${l.slug}`}
+                      className={cn(
+                        "p-3 rounded-lg text-xs font-bold transition-all",
+                        currentLang === l.slug ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"
+                      )}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {l.flag} {l.name}
+                    </Link>
+                  ))}
+               </div>
+            </div>
+
+            <div className="border-b border-white/5 py-2">
+               <p className="px-3 text-[10px] font-black text-popcorn-secondary uppercase tracking-[0.2em] mb-2">Web Series</p>
+               <div className="grid grid-cols-2 gap-2 px-3">
+                  <Link
+                    href="/web-series"
+                    className={cn(
+                      "p-3 rounded-lg text-xs font-bold transition-all",
+                      currentLang === '' ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"
+                    )}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    All Web Series
+                  </Link>
+                  {languages
+                    .filter(l => webSeriesLangSlugs.includes(l.slug))
+                    .map((l) => (
+                    <Link
+                      key={l.slug}
+                      href={`/web-series?lang=${l.slug}`}
                       className={cn(
                         "p-3 rounded-lg text-xs font-bold transition-all",
                         currentLang === l.slug ? "bg-popcorn-red text-white" : "bg-white/5 text-popcorn-secondary"

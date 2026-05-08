@@ -15,6 +15,7 @@ export default function Home() {
   const [featured, setFeatured] = useState<Post[]>([])
   const [latest, setLatest] = useState<Post[]>([])
   const [movies, setMovies] = useState<Post[]>([])
+  const [webSeries, setWebSeries] = useState<Post[]>([])
   const [blogs, setBlogs] = useState<Post[]>([])
   const [trailers, setTrailers] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
@@ -25,14 +26,14 @@ export default function Home() {
     async function fetchData() {
       setLoading(true)
       
-      // 1. Fetch Featured (limit 5)
+      // 1. Fetch Featured (limit 10)
       const { data: featuredData } = await supabase
         .from('posts')
         .select('*')
         .eq('status', 'published')
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
-        .limit(5)
+        .limit(10)
 
       // 2. Fetch Latest 4 (Anything)
       const { data: latestData } = await supabase
@@ -47,6 +48,15 @@ export default function Home() {
         .from('posts')
         .select('*')
         .eq('category', 'movies')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(10)
+
+      // 3.5 Fetch Web Series (10)
+      const { data: webSeriesData } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('category', 'web-series')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(10)
@@ -72,6 +82,7 @@ export default function Home() {
       setFeatured(featuredData || [])
       setLatest(latestData || [])
       setMovies(moviesData || [])
+      setWebSeries(webSeriesData || [])
       setBlogs(blogData || [])
       setTrailers(trailersData || [])
       setLoading(false)
@@ -95,12 +106,20 @@ export default function Home() {
 
       <div className="space-y-24 mt-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        {/* Movies Section */}
         <MovieRow 
           title="Trending Movies" 
           movies={movies} 
           viewMoreLink="/movies"
         />
+
+        {/* Web Series Section */}
+        {webSeries.length > 0 && (
+          <MovieRow 
+            title="WEB SERIES" 
+            movies={webSeries} 
+            viewMoreLink="/web-series"
+          />
+        )}
 
         {/* Blogs Section */}
         <section className="space-y-8">

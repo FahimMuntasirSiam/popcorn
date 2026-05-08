@@ -389,9 +389,10 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                     onChange={(e) => setCategory(e.target.value as PostCategory)}
                     className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-popcorn-red"
                    >
-                     <option value="movies">Movies</option>
-                     <option value="blogs">Blogs</option>
-                     <option value="trailers">Trailers</option>
+                      <option value="movies">Movies</option>
+                      <option value="web-series">Web Series 📺</option>
+                      <option value="blogs">Blogs</option>
+                      <option value="trailers">Trailers</option>
                    </select>
                  </div>
                  <div className="space-y-1">

@@ -103,6 +103,7 @@ export default function AllPostsPage() {
           {[
             { id: 'all', label: 'All Content' },
             { id: 'movies', label: 'Movies' },
+            { id: 'web-series', label: 'Web Series' },
             { id: 'blogs', label: 'Blogs' },
             { id: 'trailers', label: 'Trailers' }
           ].map((tab) => (

@@ -13,6 +13,20 @@ interface HeroProps {
 
 export default function Hero({ movies }: HeroProps) {
   const [current, setCurrent] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const next = () => setCurrent((prev) => (prev + 1) % movies.length)
+  const prev = () => setCurrent((prev) => (prev - 1 + movies.length) % movies.length)
+
+  useEffect(() => {
+    if (isPaused || movies.length === 0) return;
+    
+    const interval = setInterval(() => {
+      next();
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isPaused, movies.length])
 
   useEffect(() => {
     if (movies.length > 0) {
@@ -23,11 +37,12 @@ export default function Hero({ movies }: HeroProps) {
   if (!movies.length || !movies[current]) return null
   const activeMovie = movies[current]
 
-  const next = () => setCurrent((prev) => (prev + 1) % movies.length)
-  const prev = () => setCurrent((prev) => (prev - 1 + movies.length) % movies.length)
-
   return (
-    <div className="relative w-full h-[380px] md:h-[480px] lg:h-[580px] overflow-hidden bg-popcorn-dark flex flex-col items-center justify-center pt-12">
+    <div 
+      className="relative w-full h-[380px] md:h-[480px] lg:h-[580px] overflow-hidden bg-popcorn-dark flex flex-col items-center justify-center pt-12"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Fixed Premium Backdrop */}
       <div className="absolute inset-0">
         <Image
@@ -98,18 +113,24 @@ export default function Hero({ movies }: HeroProps) {
                         className="object-cover"
                       />
                     )}
-                    {/* Hover Overlay */}
-                    <div className={cn(
-                      "absolute inset-0 bg-popcorn-red/15 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-4",
-                    )}>
-                       <span className="bg-black/60 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10">▶ View</span>
+                    
+                    {/* Title Overlay */}
+                    <div 
+                      className="absolute bottom-0 left-0 w-full p-[24px_12px_12px] text-center"
+                      style={{
+                        background: 'linear-gradient(transparent, rgba(0,0,0,0.9))'
+                      }}
+                    >
+                      <span className="text-white text-[13px] font-bold block truncate w-full">
+                        {movie.title}
+                      </span>
                     </div>
 
                     <div className={cn(
                       "absolute inset-0 bg-black/40 transition-opacity",
                       isCenter ? "opacity-0" : "opacity-60"
                     )} />
-                 </div>
+                  </div>
                </Link>
              )
            })}

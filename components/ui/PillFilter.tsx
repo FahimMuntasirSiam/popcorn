@@ -6,13 +6,35 @@ import { useLanguages } from '@/components/providers/LanguageProvider'
 
 interface PillFilterProps {
   count: number;
+  category?: string;
 }
 
-export default function PillFilter({ count }: PillFilterProps) {
+export default function PillFilter({ count, category = 'movies' }: PillFilterProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentLang = searchParams.get('lang') || ''
   const { languages } = useLanguages()
+  const [availableLangSlugs, setAvailableLangSlugs] = React.useState<string[]>([])
+
+  React.useEffect(() => {
+    const fetchAvailableLanguages = async () => {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('posts')
+        .select('language_tag')
+        .eq('category', category)
+        .eq('status', 'published')
+        .not('language_tag', 'is', null)
+        .not('language_tag', 'eq', '')
+
+      if (data) {
+        const slugs = Array.from(new Set(data.map(p => p.language_tag)))
+        setAvailableLangSlugs(slugs)
+      }
+    }
+    fetchAvailableLanguages()
+  }, [category])
 
   const handleFilter = (value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -21,14 +43,14 @@ export default function PillFilter({ count }: PillFilterProps) {
     } else {
       params.delete('lang')
     }
-    router.push(`/movies?${params.toString()}`)
+    router.push(`/${category}?${params.toString()}`)
   }
 
   return (
     <div className="space-y-6 mb-8">
       <div className="flex items-center justify-between">
         <p className="text-gray-500 text-sm font-medium tracking-tight">
-          Showing <span className="text-white font-bold">{count}</span> movies
+          Showing <span className="text-white font-bold">{count}</span> {category.replace('-', ' ')}
         </p>
       </div>
 
@@ -44,23 +66,25 @@ export default function PillFilter({ count }: PillFilterProps) {
         >
           All
         </button>
-        {languages.map((lang) => {
-          const isActive = currentLang === lang.slug
-          return (
-            <button
-              key={lang.slug}
-              onClick={() => handleFilter(lang.slug)}
-              className={cn(
-                "px-5 py-2 rounded-full text-[13px] transition-all duration-200 border",
-                isActive 
-                  ? "bg-popcorn-red border-popcorn-red text-white font-semibold" 
-                  : "bg-[#1a1a1a] border-[#333] text-[#aaa] hover:border-popcorn-red hover:text-white"
-              )}
-            >
-              {lang.flag} {lang.name}
-            </button>
-          )
-        })}
+        {languages
+          .filter(lang => availableLangSlugs.includes(lang.slug))
+          .map((lang) => {
+            const isActive = currentLang === lang.slug
+            return (
+              <button
+                key={lang.slug}
+                onClick={() => handleFilter(lang.slug)}
+                className={cn(
+                  "px-5 py-2 rounded-full text-[13px] transition-all duration-200 border",
+                  isActive 
+                    ? "bg-popcorn-red border-popcorn-red text-white font-semibold" 
+                    : "bg-[#1a1a1a] border-[#333] text-[#aaa] hover:border-popcorn-red hover:text-white"
+                )}
+              >
+                {lang.flag} {lang.name}
+              </button>
+            )
+          })}
       </div>
     </div>
   )
