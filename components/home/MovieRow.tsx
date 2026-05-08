@@ -29,7 +29,7 @@ export default function MovieRow({ title, movies, viewMoreLink }: MovieRowProps)
     <section className="space-y-8 relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">
+          <h2 className="text-3xl font-black text-white uppercase tracking-tighter">
             {title}
           </h2>
           <div className="h-1 w-24 bg-gradient-to-r from-popcorn-red to-transparent rounded-full" />

@@ -7,17 +7,13 @@ import Hero from '@/components/home/Hero'
 import MovieRow from '@/components/home/MovieRow'
 import { Post } from '@/types'
 import AdUnit from '@/components/ui/AdUnit'
-import MovieCard from '@/components/cards/MovieCard'
-import BlogCard from '@/components/cards/BlogCard'
-import { Loader2, ChevronRight } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 export default function Home() {
   const [featured, setFeatured] = useState<Post[]>([])
   const [latest, setLatest] = useState<Post[]>([])
   const [movies, setMovies] = useState<Post[]>([])
   const [webSeries, setWebSeries] = useState<Post[]>([])
-  const [blogs, setBlogs] = useState<Post[]>([])
-  const [trailers, setTrailers] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
 
   const supabase = createClient()
@@ -61,30 +57,12 @@ export default function Home() {
         .order('created_at', { ascending: false })
         .limit(10)
       
-      // 4. Fetch Blogs (10)
-      const { data: blogData } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('category', 'blogs')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(10)
 
-      // 5. Fetch Trailers (10)
-      const { data: trailersData } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('category', 'trailers')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(10)
 
       setFeatured(featuredData || [])
       setLatest(latestData || [])
       setMovies(moviesData || [])
       setWebSeries(webSeriesData || [])
-      setBlogs(blogData || [])
-      setTrailers(trailersData || [])
       setLoading(false)
     }
 
@@ -121,31 +99,7 @@ export default function Home() {
           />
         )}
 
-        {/* Blogs Section */}
-        <section className="space-y-8">
-           <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                 <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">Latest Blog Posts</h2>
-                 <div className="h-1 w-24 bg-gradient-to-r from-popcorn-red to-transparent rounded-full" />
-              </div>
-           </div>
 
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {blogs.slice(0, 6).map(post => (
-                <BlogCard key={post.id} post={post} />
-              ))}
-           </div>
-
-           <div className="flex justify-center pt-4">
-              <Link 
-                href="/blogs"
-                className="group flex items-center space-x-2 bg-white/5 hover:bg-popcorn-red text-white px-8 py-3 rounded-full border border-white/10 transition-all text-xs font-black uppercase tracking-widest shadow-xl"
-              >
-                <span>View More</span>
-                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-           </div>
-        </section>
 
         <div className="space-y-4">
           <AdUnit 
@@ -182,12 +136,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Trailers Section */}
-        <MovieRow 
-          title="Trailers & Teasers" 
-          movies={trailers} 
-          viewMoreLink="/trailers"
-        />
+
       </div>
     </div>
   )
