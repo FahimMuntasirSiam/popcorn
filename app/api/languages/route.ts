@@ -48,14 +48,13 @@ export async function POST(request: Request) {
 
     const supabase = getServiceSupabase();
     
-    // Check if slug exists
+    // Check if slug exists (including soft-deleted)
     const { data: existing } = await supabase
       .from('languages')
       .select('id')
-      .eq('slug', slug)
-      .single();
+      .eq('slug', slug);
 
-    if (existing) {
+    if (existing && existing.length > 0) {
       return NextResponse.json({ error: 'Slug must be unique' }, { status: 400 });
     }
 
