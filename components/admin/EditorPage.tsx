@@ -148,7 +148,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   }, [editor])
 
   // Save Logic
-  const handleSave = async (forceStatus?: PostStatus) => {
+  const handleSave = async (forceStatus?: PostStatus, isAutoSave = false) => {
     if (!title) {
       toast.error('Title is required')
       return
@@ -176,12 +176,14 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
     }
 
     let error
+    let newId = null
     if (postId) {
       const { error: err } = await supabase.from('posts').update(payload).eq('id', postId)
       error = err
     } else {
-      const { error: err } = await supabase.from('posts').insert(payload)
+      const { data: newPost, error: err } = await supabase.from('posts').insert(payload).select('id').single()
       error = err
+      if (newPost) newId = newPost.id
     }
 
     if (error) {
@@ -195,8 +197,8 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
         clearInterval(autoSaveIntervalRef.current)
       }
 
-      if (!postId) {
-        router.push('/admin/posts')
+      if (!postId && newId) {
+        router.push(`/admin/posts/${newId}/edit`)
         router.refresh()
       }
     }
@@ -212,7 +214,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
       
       const content = editor.getHTML()
       if (title && content !== '<p></p>') {
-        handleSave('draft')
+        handleSave('draft', true)
         console.log('Auto-saved draft at', new Date().toLocaleTimeString())
       }
     }, 60000)
