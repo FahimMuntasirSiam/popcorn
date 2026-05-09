@@ -46,7 +46,7 @@ export default function Home() {
         .eq('category', 'movies')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
-        .limit(10)
+        .limit(15)
 
       // 3.5 Fetch Web Series (10)
       const { data: webSeriesData } = await supabase
@@ -55,7 +55,7 @@ export default function Home() {
         .eq('category', 'web-series')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
-        .limit(10)
+        .limit(15)
       
 
 

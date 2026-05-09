@@ -128,12 +128,13 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <span className="text-2xl font-black text-white group-hover:scale-110 transition-transform">
-                🍿 Popcorn
+            <Link href="/" className="flex items-center group shrink-0">
+              <span className="text-2xl font-black text-white group-hover:scale-110 transition-transform whitespace-nowrap flex items-center gap-2">
+                <span>🍿</span>
+                <span>Popcorn</span>
               </span>
             </Link>
-            <div className="hidden md:block ml-10">
+            <div className="hidden md:block ml-8 xl:ml-10">
               <div className="flex items-center space-x-4">
                 <Link
                   href="/"
@@ -204,12 +205,12 @@ export default function Navbar() {
                   <Link
                     href="/web-series"
                     className={cn(
-                      "text-popcorn-secondary hover:text-popcorn-red px-3 py-2 rounded-md text-sm font-bold transition-all flex items-center space-x-1",
+                      "text-popcorn-secondary hover:text-popcorn-red px-3 py-2 rounded-md text-sm font-bold transition-all flex items-center space-x-1 whitespace-nowrap",
                       isWebSeriesOpen && "text-popcorn-red"
                     )}
                   >
                     <span>Web Series</span>
-                    <ChevronDown size={14} className={cn("transition-transform duration-200", isWebSeriesOpen && "rotate-180")} />
+                    <ChevronDown size={14} className={cn("transition-transform duration-200 shrink-0", isWebSeriesOpen && "rotate-180")} />
                   </Link>
 
                   {isWebSeriesOpen && (
@@ -292,21 +293,15 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center space-x-3 bg-white/5 hover:bg-white/10 p-1 pr-3 rounded-full transition-all border border-white/5"
+                  className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden bg-popcorn-red transition-transform hover:scale-105 border border-white/10 shrink-0 shadow-lg"
                 >
-                  <div className="w-8 h-8 rounded-full overflow-hidden relative border border-white/10">
-                    {userAvatar ? (
-                      <Image src={userAvatar} alt={userDisplayName} fill className="object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-popcorn-red flex items-center justify-center">
-                        <UserIcon size={16} className="text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-sm font-bold text-white max-w-[120px] truncate">
-                    {userDisplayName}
-                  </span>
-                  <ChevronDown size={14} className={`text-gray-400 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                  {userAvatar ? (
+                    <Image src={userAvatar} alt={userDisplayName || 'User'} fill className="object-cover" />
+                  ) : (
+                    <span className="text-white font-bold text-sm uppercase">
+                      {userDisplayName?.charAt(0) || 'U'}
+                    </span>
+                  )}
                 </button>
 
                 {isProfileOpen && (

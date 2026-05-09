@@ -1,10 +1,9 @@
 'use client'
 
-import { useRef } from 'react'
 import Link from 'next/link'
 import MovieCard from '@/components/cards/MovieCard'
 import { Post } from '@/types'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
 interface MovieRowProps {
   title: string;
@@ -13,16 +12,6 @@ interface MovieRowProps {
 }
 
 export default function MovieRow({ title, movies, viewMoreLink }: MovieRowProps) {
-  const scrollRef = useRef<HTMLDivElement>(null)
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current
-      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth
-      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' })
-    }
-  }
-
   if (movies.length === 0) return null;
 
   return (
@@ -46,32 +35,12 @@ export default function MovieRow({ title, movies, viewMoreLink }: MovieRowProps)
         )}
       </div>
 
-      <div className="relative group/row">
-        {/* Navigation Arrows */}
-        <button 
-          onClick={() => scroll('left')}
-          className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/60 hover:bg-popcorn-red text-white rounded-full backdrop-blur-md transition-all opacity-0 group-hover/row:opacity-100 hidden md:flex shadow-2xl"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        
-        <div 
-          ref={scrollRef}
-          className="flex flex-row overflow-x-auto gap-4 pb-2 scroll-smooth no-scrollbar"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {movies.map((movie) => (
-             <MovieCard key={movie.id} movie={movie} variant="fixed" />
-          ))}
-        </div>
-
-        <button 
-          onClick={() => scroll('right')}
-          className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/60 hover:bg-popcorn-red text-white rounded-full backdrop-blur-md transition-all opacity-0 group-hover/row:opacity-100 hidden md:flex shadow-2xl"
-        >
-          <ChevronRight size={20} />
-        </button>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        {movies.map((movie) => (
+           <MovieCard key={movie.id} movie={movie} variant="grid" />
+        ))}
       </div>
     </section>
   )
 }
+
