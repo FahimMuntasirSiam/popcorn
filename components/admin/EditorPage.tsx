@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
@@ -61,7 +61,10 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [wordCount, setWordCount] = useState(0)
+  const [localPostId, setLocalPostId] = useState(postId)
   const autoSaveIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const lastSavedRef = useRef<Date | null>(null)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
   // Safe command helper
   const safeCommand = (fn: (editor: any) => void) => {
@@ -134,10 +137,10 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
 
   // Auto-slugify
   useEffect(() => {
-    if (!postId && !initialData && title) {
+    if (!localPostId && !initialData && title) {
        setSlug(slugify(title))
     }
-  }, [title, postId, initialData])
+  }, [title, localPostId, initialData])
 
   // Word Count Sync on Init
   useEffect(() => {
@@ -177,8 +180,8 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
 
     let error
     let newId = null
-    if (postId) {
-      const { error: err } = await supabase.from('posts').update(payload).eq('id', postId)
+    if (localPostId) {
+      const { error: err } = await supabase.from('posts').update(payload).eq('id', localPostId)
       error = err
     } else {
       const { data: newPost, error: err } = await supabase.from('posts').insert(payload).select('id').single()
@@ -190,14 +193,15 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
       toast.error(error.message)
     } else {
       setStatus(currentStatus) // Sync local status state
-      toast.success(postId ? 'Post updated' : 'Post created')
+      toast.success(localPostId ? 'Post updated' : 'Post created')
       
       // If published, clear the auto-save interval immediately
       if (currentStatus === 'published' && autoSaveIntervalRef.current) {
         clearInterval(autoSaveIntervalRef.current)
       }
 
-      if (!postId && newId) {
+      if (!localPostId && newId) {
+        setLocalPostId(newId)
         router.push(`/admin/posts/${newId}/edit`)
         router.refresh()
       }
@@ -205,27 +209,82 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
     setSaving(false)
   }
 
-  // Auto-save logic (60s)
+  const performAutoSave = useCallback(async () => {
+    if (!editor || editor.isDestroyed) return
+    if (!title?.trim()) return
+    
+    setSaveStatus('saving')
+    
+    try {
+      const content = editor.getHTML()
+      const wordCountValue = editor.storage.characterCount?.words() ?? 0
+      
+      const response = await fetch(
+        '/api/admin/autosave', 
+        {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json' 
+          },
+          body: JSON.stringify({
+            id: localPostId || null,
+            title,
+            content,
+            word_count: wordCountValue,
+            status: 'draft',
+            slug: slug || null,
+            meta_description: metaDescription || null,
+          }),
+          signal: AbortSignal.timeout(10000)
+        }
+      )
+      
+      if (!response.ok) throw new Error('Save failed')
+      
+      const data = await response.json()
+      
+      // If new post was created, save the ID
+      // but DO NOT navigate
+      if (data.id && !localPostId) {
+        setLocalPostId(data.id)
+      }
+      
+      lastSavedRef.current = new Date()
+      setSaveStatus('saved')
+      
+      // Reset to idle after 3 seconds
+      setTimeout(() => setSaveStatus('idle'), 3000)
+      
+    } catch (error) {
+      console.error('Auto-save error:', error)
+      setSaveStatus('error')
+      setTimeout(() => setSaveStatus('idle'), 5000)
+      // NEVER throw or navigate on error
+    }
+  }, [editor, title, localPostId, slug, metaDescription])
+
   useEffect(() => {
     if (status !== 'draft') return 
 
-    autoSaveIntervalRef.current = setInterval(() => {
-      if (!editor || editor.isDestroyed) return
-      
-      const content = editor.getHTML()
-      if (title && content !== '<p></p>') {
-        handleSave('draft', true)
-        console.log('Auto-saved draft at', new Date().toLocaleTimeString())
-      }
-    }, 60000)
-
+    // Clear any existing interval
+    if (autoSaveIntervalRef.current) {
+      clearInterval(autoSaveIntervalRef.current)
+    }
+    
+    // Start new interval
+    autoSaveIntervalRef.current = setInterval(
+      performAutoSave, 
+      90000 // every 90 seconds
+    )
+    
+    // Cleanup on unmount
     return () => {
       if (autoSaveIntervalRef.current) {
         clearInterval(autoSaveIntervalRef.current)
+        autoSaveIntervalRef.current = null
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, editor, slug, metaDescription, category, languageTag, genre])
+  }, [performAutoSave, status])
 
   // Image Upload
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -302,6 +361,21 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                <div className="flex items-center space-x-2">
                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                  <span>Editor Ready</span>
+                 {saveStatus === 'saving' && (
+                  <span style={{color:'#aaa', fontSize:'11px', marginLeft:'12px'}}>
+                    ⏳ Saving draft...
+                  </span>
+                )}
+                {saveStatus === 'saved' && (
+                  <span style={{color:'#4ade80', fontSize:'11px', marginLeft:'12px'}}>
+                    ✓ Draft saved
+                  </span>
+                )}
+                {saveStatus === 'error' && (
+                  <span style={{color:'#f87171', fontSize:'11px', marginLeft:'12px'}}>
+                    ✗ Save failed — your work is safe
+                  </span>
+                )}
                </div>
                <span>Words: {wordCount}</span>
             </div>

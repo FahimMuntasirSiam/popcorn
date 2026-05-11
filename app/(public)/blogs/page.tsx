@@ -8,6 +8,8 @@ export const metadata = {
   description: 'Read the latest movie news, reviews, and editorial stories.',
 }
 
+export const revalidate = 1800
+
 export default async function BlogsListingPage() {
   const supabase = createClient()
 
@@ -43,7 +45,7 @@ export default async function BlogsListingPage() {
                   <div className="py-4">
                     <AdUnit 
                       className="hidden md:flex" 
-                      minHeight="90px"
+                      minHeight={90}
                       code={`
                         <script type="text/javascript">
                           atOptions = {

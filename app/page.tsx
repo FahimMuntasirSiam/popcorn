@@ -1,86 +1,62 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import Link from 'next/link'
+import { createClient } from '@/lib/supabase-server'
 import Hero from '@/components/home/Hero'
 import MovieRow from '@/components/home/MovieRow'
 import { Post } from '@/types'
 import AdUnit from '@/components/ui/AdUnit'
-import { Loader2 } from 'lucide-react'
 
-export default function Home() {
-  const [featured, setFeatured] = useState<Post[]>([])
-  const [latest, setLatest] = useState<Post[]>([])
-  const [movies, setMovies] = useState<Post[]>([])
-  const [webSeries, setWebSeries] = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
+export const revalidate = 3600 // revalidate every hour
 
+export default async function Home() {
   const supabase = createClient()
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true)
-      
-      // 1. Fetch Featured (limit 10)
-      const { data: featuredData } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('status', 'published')
-        .eq('is_featured', true)
-        .order('created_at', { ascending: false })
-        .limit(10)
+  // 1. Fetch Featured Movies (limit 10)
+  const { data: featuredMovies } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('category', 'movies')
+    .eq('status', 'published')
+    .eq('is_featured', true)
+    .order('updated_at', { ascending: false })
+    .limit(10)
 
-      // 2. Fetch Latest 4 (Anything)
-      const { data: latestData } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(4)
+  // 2. Fetch Latest 5 Movies (Fallback)
+  const { data: latestMovies } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('category', 'movies')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+    .limit(5)
 
-      // 3. Fetch Movies (10)
-      const { data: moviesData } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('category', 'movies')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(15)
+  // 3. Fetch Movies (15)
+  const { data: moviesData } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('category', 'movies')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+    .limit(15)
 
-      // 3.5 Fetch Web Series (10)
-      const { data: webSeriesData } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('category', 'web-series')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(15)
-      
+  // 3.5 Fetch Web Series (15)
+  const { data: webSeriesData } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('category', 'web-series')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+    .limit(15)
 
+  const carouselMovies = (featuredMovies && featuredMovies.length > 0)
+    ? featuredMovies
+    : (latestMovies || [])
 
-      setFeatured(featuredData || [])
-      setLatest(latestData || [])
-      setMovies(moviesData || [])
-      setWebSeries(webSeriesData || [])
-      setLoading(false)
-    }
-
-    fetchData()
-  }, [supabase])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-popcorn-dark">
-        <Loader2 className="animate-spin text-popcorn-red" size={48} />
-      </div>
-    )
-  }
+  const movies = moviesData || []
+  const webSeries = webSeriesData || []
 
   return (
     <div className="pb-24 bg-popcorn-dark">
       {/* Featured Hero Carousel */}
-      {featured.length > 0 && <Hero movies={featured} />}
+      {carouselMovies.length > 0 && <Hero movies={carouselMovies} />}
 
       <div className="space-y-24 mt-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
@@ -88,6 +64,7 @@ export default function Home() {
           title="Trending Movies" 
           movies={movies} 
           viewMoreLink="/movies"
+          priority={true}
         />
 
         {/* Web Series Section */}
@@ -99,12 +76,10 @@ export default function Home() {
           />
         )}
 
-
-
-        <div className="space-y-4">
+        <div className="space-y-4 ad-container">
           <AdUnit 
             className="hidden md:flex" 
-            minHeight="90px"
+            minHeight={90}
             code={`
               <script type="text/javascript">
                 atOptions = {
@@ -120,7 +95,7 @@ export default function Home() {
           />
           <AdUnit 
             className="md:hidden flex" 
-            minHeight="50px"
+            minHeight={50}
             code={`
               <script type="text/javascript">
                 atOptions = {
@@ -135,10 +110,9 @@ export default function Home() {
             `} 
           />
         </div>
-
-
       </div>
     </div>
   )
 }
+
 

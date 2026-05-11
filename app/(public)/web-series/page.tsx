@@ -10,6 +10,8 @@ export const metadata = {
   description: 'Explore the latest trending web series, ratings, and download options.',
 }
 
+export const revalidate = 1800
+
 export default async function WebSeriesListingPage({ 
   searchParams 
 }: { 
@@ -60,7 +62,7 @@ export default async function WebSeriesListingPage({
                 <div className="col-span-full py-8 border-y border-white/5 my-4">
                   <AdUnit 
                     className="hidden md:flex" 
-                    minHeight="90px"
+                    minHeight={90}
                     code={`
                       <script type="text/javascript">
                         atOptions = {

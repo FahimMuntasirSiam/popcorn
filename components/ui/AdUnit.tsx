@@ -1,96 +1,75 @@
 'use client'
-
-import React from 'react'
+import { useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface AdUnitProps {
   code: string
   className?: string
-  minHeight?: string
+  minHeight?: number
+  id?: string
 }
 
-class AdErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props)
-    this.state = { hasError: false }
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true }
-  }
-
-  componentDidCatch(error: any, errorInfo: any) {
-    console.error("AdUnit Error:", error, errorInfo)
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return null // Hide ads if they crash
-    }
-    return this.props.children
-  }
-}
-
-const AdUnitContent = ({ code, className, minHeight = '50px' }: AdUnitProps) => {
-  const adRef = React.useRef<HTMLDivElement>(null)
-  const [isAdmin, setIsAdmin] = React.useState(false)
+export default function AdUnit({ 
+  code, 
+  className, 
+  minHeight = 90,
+  id 
+}: AdUnitProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
   
-  React.useEffect(() => {
-    const checkAdmin = async () => {
-      const { createClient } = await import('@/lib/supabase/client')
-      const supabase = createClient()
-      const { data } = await supabase.auth.getUser()
-      if (data?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-        setIsAdmin(true)
-      }
-    }
-    checkAdmin()
-  }, [])
-
-  React.useEffect(() => {
-    if (isAdmin) return
-    if (adRef.current) {
-      adRef.current.innerHTML = ''
+  // Never show in admin
+  if (pathname?.startsWith('/admin')) return null
+  
+  useEffect(() => {
+    if (!containerRef.current || !code) return
+    
+    // Clear container
+    containerRef.current.innerHTML = ''
+    
+    // Parse HTML string into DOM nodes
+    const fragment = document.createRange()
+      .createContextualFragment(code)
+    
+    // Find all script tags in the fragment
+    const scripts = fragment.querySelectorAll('script')
+    
+    // Append non-script content first
+    containerRef.current.appendChild(fragment)
+    
+    // Re-create and append each script tag
+    // (cloned scripts DO execute)
+    scripts.forEach(originalScript => {
+      const newScript = document.createElement('script')
       
-      try {
-        const div = document.createElement('div')
-        div.innerHTML = code
-        const scripts = Array.from(div.querySelectorAll('script'))
-        
-        scripts.forEach(oldScript => {
-          const newScript = document.createElement('script')
-          Array.from(oldScript.attributes).forEach(attr => {
-            newScript.setAttribute(attr.name, attr.value)
-          })
-          newScript.innerHTML = oldScript.innerHTML
-          adRef.current?.appendChild(newScript)
+      // Copy all attributes
+      Array.from(originalScript.attributes)
+        .forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value)
         })
-
-        // Also append non-script content
-        const nonScripts = Array.from(div.childNodes).filter(node => node.nodeName !== 'SCRIPT')
-        nonScripts.forEach(node => {
-          adRef.current?.appendChild(node.cloneNode(true))
-        })
-      } catch (err) {
-        console.error("Ad Injection Error:", err)
+      
+      // Copy inline script content
+      if (originalScript.innerHTML) {
+        newScript.innerHTML = originalScript.innerHTML
       }
-    }
+      
+      containerRef.current?.appendChild(newScript)
+    })
+    
   }, [code])
-
-  if (isAdmin) return null
-
+  
   return (
-    <div 
-      ref={adRef}
-      className={`flex justify-center items-center overflow-hidden w-full ${className || ''}`}
-      style={{ minHeight }}
+    <div
+      ref={containerRef}
+      id={id}
+      className={className}
+      style={{ 
+        minHeight,
+        overflow: 'hidden',
+        display: 'block',
+        width: '100%'
+      }}
     />
   )
 }
 
-export default function AdUnit(props: AdUnitProps) {
-  return (
-    <AdErrorBoundary>
-      <AdUnitContent {...props} />
-    </AdErrorBoundary>
-  )
-}

@@ -111,6 +111,7 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
               src={post.cover_image}
               alt={post.title}
               fill
+              sizes="100vw"
               className="object-cover blur-[100px] opacity-20"
               priority
             />
@@ -120,9 +121,9 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
 
         <div className="relative z-10 p-6 lg:p-12 h-full flex flex-col max-w-[800px] mx-auto">
            {/* LEFT TOP AD */}
-           <div id="ad-download-left-top" className="w-full min-h-[250px] bg-[#141414] rounded-xl mb-8 overflow-hidden flex items-center justify-center">
+           <div id="ad-download-left-top" className="w-full min-h-[250px] bg-[#141414] rounded-xl mb-8 overflow-hidden flex items-center justify-center ad-container">
               <AdUnit 
-                minHeight="250px"
+                minHeight={250}
                 code={`<script type="text/javascript" src="https://pl29300532.profitablecpmratenetwork.com/cb/84/86/cb84861c3dec1995f49a5b34cd3e2a06.js"></script>`}
               />
            </div>
@@ -166,9 +167,9 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
            </div>
 
            {/* LEFT BOTTOM AD */}
-           <div id="ad-download-left-bottom" className="w-full min-h-[250px] bg-[#141414] rounded-xl mt-8 overflow-hidden flex items-center justify-center">
+           <div id="ad-download-left-bottom" className="w-full min-h-[250px] bg-[#141414] rounded-xl mt-8 overflow-hidden flex items-center justify-center ad-container">
               <AdUnit 
-                minHeight="250px"
+                minHeight={250}
                 code={`<script type="text/javascript" src="https://pl29300532.profitablecpmratenetwork.com/cb/84/86/cb84861c3dec1995f49a5b34cd3e2a06.js"></script>`}
               />
            </div>
@@ -185,6 +186,7 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
                   src={post.cover_image} 
                   alt={post.title} 
                   fill 
+                  sizes="120px"
                   className="object-cover"
                 />
               )}
@@ -203,10 +205,10 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
         </div>
 
         {/* AD UNIT 1 (TOP) */}
-        <div id="ad-download-top" className="w-full mb-8 flex flex-col items-center">
+        <div id="ad-download-top" className="w-full mb-8 flex flex-col items-center ad-container">
            <AdUnit 
               className="hidden lg:flex" 
-              minHeight="90px"
+              minHeight={90}
               code={`
                 <script type="text/javascript">
                   atOptions = { 'key' : '64530885a0cbc7ae0904c3e6dfc4c192', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
@@ -216,7 +218,7 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
             />
             <AdUnit 
               className="lg:hidden flex" 
-              minHeight="50px"
+              minHeight={50}
               code={`
                 <script type="text/javascript">
                   atOptions = { 'key' : '2b58bfa05eeeaedde521d109142d97e3', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
@@ -260,9 +262,9 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
                  <p className="text-[11px] text-[#666] font-bold tracking-[3px] uppercase animate-pulse">PREPARING YOUR DOWNLOAD...</p>
 
                  {/* AD UNIT 2 (DURING COUNTDOWN) */}
-                 <div className="w-[300px] h-[250px] bg-[#141414] rounded-xl overflow-hidden mt-4 shadow-2xl animate-in fade-in duration-500">
+                 <div className="w-[300px] h-[250px] bg-[#141414] rounded-xl overflow-hidden mt-4 shadow-2xl animate-in fade-in duration-500 mx-auto ad-container">
                     <AdUnit 
-                      minHeight="250px"
+                      minHeight={250}
                       code={`<script type="text/javascript" src="https://pl29300532.profitablecpmratenetwork.com/cb/84/86/cb84861c3dec1995f49a5b34cd3e2a06.js"></script>`}
                     />
                  </div>
@@ -289,6 +291,22 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
               </div>
            )}
         </div>
+      </div>
+
+      {/* BOTTOM BANNER AD */}
+      <div className="w-full bg-[#141414] border-t border-white/5 py-4 ad-container">
+         <div className="max-w-7xl mx-auto px-6">
+            <AdUnit 
+              minHeight={90}
+              className="flex justify-center"
+              code={`
+                <script type="text/javascript">
+                  atOptions = { 'key' : '64530885a0cbc7ae0904c3e6dfc4c192', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/64530885a0cbc7ae0904c3e6dfc4c192/invoke.js"></script>
+              `} 
+            />
+         </div>
       </div>
     </div>
   )

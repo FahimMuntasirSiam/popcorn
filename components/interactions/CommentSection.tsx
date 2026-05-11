@@ -100,7 +100,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
             <div className="flex items-start space-x-4">
               <div className="w-10 h-10 rounded-full overflow-hidden relative border border-white/10 shrink-0">
                 {user.user_metadata?.avatar_url ? (
-                  <Image src={user.user_metadata.avatar_url} alt="You" fill className="object-cover" />
+                  <Image src={user.user_metadata.avatar_url} alt="You" fill sizes="40px" className="object-cover" />
                 ) : (
                   <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
                     <UserIcon size={20} className="text-neutral-500" />
@@ -154,7 +154,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
             <div key={comment.id} className="group relative flex space-x-4 p-5 bg-[#141414] border border-[#1f1f1f] rounded-xl transition-all">
                <div className="w-10 h-10 rounded-full overflow-hidden relative border border-white/10 shrink-0">
                   {comment.user_avatar ? (
-                    <Image src={comment.user_avatar} alt={comment.user_name} fill className="object-cover" />
+                    <Image src={comment.user_avatar} alt={comment.user_name} fill sizes="40px" className="object-cover" />
                   ) : (
                     <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
                       <UserIcon size={20} className="text-neutral-700" />

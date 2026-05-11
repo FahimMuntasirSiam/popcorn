@@ -3,7 +3,10 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    poweredByHeader: false,
+    compress: true,
     images: {
+        minimumCacheTTL: 86400,
         remotePatterns: [
             {
                 protocol: 'https',
@@ -20,5 +23,6 @@ const nextConfig = {
         ],
     },
 };
+
 
 export default nextConfig;

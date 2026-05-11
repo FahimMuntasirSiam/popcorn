@@ -8,9 +8,10 @@ interface MovieCardProps {
   movie: Post;
   className?: string;
   variant?: 'grid' | 'fixed';
+  priority?: boolean;
 }
 
-export default function MovieCard({ movie, className, variant = 'grid' }: MovieCardProps) {
+export default function MovieCard({ movie, className, variant = 'grid', priority = false }: MovieCardProps) {
   const isFixed = variant === 'fixed';
 
   return (
@@ -32,7 +33,8 @@ export default function MovieCard({ movie, className, variant = 'grid' }: MovieC
             alt={movie.title}
             fill
             className="object-cover object-top block"
-            sizes={isFixed ? "180px" : "(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"}
+            sizes={isFixed ? "180px" : "(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 180px"}
+            priority={priority}
           />
         ) : (
           <div className="w-full h-full bg-neutral-800 flex items-center justify-center">

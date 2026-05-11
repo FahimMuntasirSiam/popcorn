@@ -296,7 +296,7 @@ export default function Navbar() {
                   className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden bg-popcorn-red transition-transform hover:scale-105 border border-white/10 shrink-0 shadow-lg"
                 >
                   {userAvatar ? (
-                    <Image src={userAvatar} alt={userDisplayName || 'User'} fill className="object-cover" />
+                    <Image src={userAvatar} alt={userDisplayName || 'User'} fill sizes="36px" className="object-cover" />
                   ) : (
                     <span className="text-white font-bold text-sm uppercase">
                       {userDisplayName?.charAt(0) || 'U'}
@@ -466,7 +466,7 @@ export default function Navbar() {
                    <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 rounded-full overflow-hidden relative border border-white/10">
                         {userAvatar ? (
-                          <Image src={userAvatar} alt={userDisplayName} fill className="object-cover" />
+                          <Image src={userAvatar} alt={userDisplayName} fill sizes="40px" className="object-cover" />
                         ) : (
                           <div className="w-full h-full bg-popcorn-red flex items-center justify-center">
                             <UserIcon size={20} className="text-white" />

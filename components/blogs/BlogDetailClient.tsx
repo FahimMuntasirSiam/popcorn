@@ -39,6 +39,7 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
                  src={post.cover_image}
                  alt={post.title}
                  fill
+                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                  className="object-cover"
                  priority
                />
@@ -115,9 +116,9 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
         </div>
 
         {/* ZONE 4: AD PLACEMENT */}
-        <div className="max-w-[900px] mx-auto my-12 overflow-hidden rounded-lg adsterra-native-container">
+        <div className="max-w-[900px] mx-auto my-12 overflow-hidden rounded-lg adsterra-native-container ad-container">
            <AdUnit 
-             minHeight="150px"
+             minHeight={150}
              code={`
                <script async="async" data-cfasync="false" src="https://pl29300533.profitablecpmratenetwork.com/da55b4511adc1415509e85c18ae83962/invoke.js"></script>
                <div id="container-da55b4511adc1415509e85c18ae83962"></div>
@@ -137,6 +138,7 @@ export default function BlogDetailClient({ post, relatedPosts }: BlogDetailClien
                          src={p.cover_image || ''}
                          alt={p.title}
                          fill
+                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 300px"
                          className="object-cover transition-all duration-300 group-hover:brightness-110"
                        />
                     </div>

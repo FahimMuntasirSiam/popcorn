@@ -49,6 +49,7 @@ export default function Hero({ movies }: HeroProps) {
           src="/premium_hero.png"
           alt="Premium Banner"
           fill
+          sizes="100vw"
           className="object-cover object-center opacity-50"
           priority
         />
@@ -110,7 +111,9 @@ export default function Hero({ movies }: HeroProps) {
                         src={movie.cover_image} 
                         alt={movie.title} 
                         fill 
+                        sizes="(max-width: 768px) 150px, (max-width: 1200px) 200px, 200px"
                         className="object-cover"
+                        priority={isCenter}
                       />
                     )}
                     

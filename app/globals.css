@@ -86,3 +86,11 @@ body {
 .tiptap {
   overflow-y: visible !important;
 }
+
+/* Ad Visibility Fix */
+.ad-container iframe {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+

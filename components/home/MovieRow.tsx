@@ -9,9 +9,10 @@ interface MovieRowProps {
   title: string;
   movies: Post[];
   viewMoreLink?: string;
+  priority?: boolean;
 }
 
-export default function MovieRow({ title, movies, viewMoreLink }: MovieRowProps) {
+export default function MovieRow({ title, movies, viewMoreLink, priority = false }: MovieRowProps) {
   if (movies.length === 0) return null;
 
   return (
@@ -36,8 +37,8 @@ export default function MovieRow({ title, movies, viewMoreLink }: MovieRowProps)
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        {movies.map((movie) => (
-           <MovieCard key={movie.id} movie={movie} variant="grid" />
+        {movies.map((movie, index) => (
+           <MovieCard key={movie.id} movie={movie} variant="grid" priority={priority && index === 0} />
         ))}
       </div>
     </section>

@@ -126,7 +126,7 @@ export default async function TrailerPostPage({
         {/* Ad Unit */}
         <AdUnit 
           className="mx-auto" 
-          minHeight="90px"
+          minHeight={90}
           code={`
             <script type="text/javascript">
               atOptions = {
@@ -199,7 +199,7 @@ export default async function TrailerPostPage({
                 </Link>
 
                 <AdUnit 
-                  minHeight="250px"
+                  minHeight={250}
                   className="w-[300px] h-[250px] mx-auto bg-white/5 rounded-xl"
                   code={`<script type="text/javascript" src="https://pl29300532.profitablecpmratenetwork.com/cb/84/86/cb84861c3dec1995f49a5b34cd3e2a06.js"></script>`}
                 />

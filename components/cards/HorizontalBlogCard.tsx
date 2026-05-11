@@ -24,7 +24,7 @@ export default function HorizontalBlogCard({ post }: HorizontalBlogCardProps) {
               alt={post.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105 rounded-l-[10px]"
-              sizes="280px"
+              sizes="(max-width: 768px) 100vw, 280px"
             />
           ) : (
             <div className="w-full h-full bg-neutral-900 flex items-center justify-center">

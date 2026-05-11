@@ -68,16 +68,23 @@ export default function AllPostsPage() {
   }
 
   const toggleFeatured = async (id: string, currentStatus: boolean) => {
-    const { error } = await supabase
-      .from('posts')
-      .update({ is_featured: !currentStatus })
-      .eq('id', id)
-    
-    if (error) {
+    // Optimistic Update
+    const previousPosts = [...posts]
+    setPosts(posts.map(p => p.id === id ? { ...p, is_featured: !currentStatus } : p))
+
+    try {
+      const response = await fetch('/api/admin/toggle-featured', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, is_featured: !currentStatus })
+      })
+
+      if (!response.ok) throw new Error('Failed to update')
+
+      toast.success(!currentStatus ? 'Added to hero' : 'Removed from hero')
+    } catch (error) {
       toast.error('Failed to update featured status')
-    } else {
-      toast.success(!currentStatus ? 'Post featured!' : 'Post unfeatured')
-      setPosts(posts.map(p => p.id === id ? { ...p, is_featured: !currentStatus } : p))
+      setPosts(previousPosts) // Revert
     }
   }
 
@@ -169,8 +176,16 @@ export default function AllPostsPage() {
                   ))
                 ) : posts.map((post) => (
                   <tr key={post.id} className="hover:bg-white/2 transition-colors">
-                    <td className="px-6 py-4 max-w-md">
+                    <td className="px-6 py-4 max-w-md relative group">
                       <span className="text-sm font-bold text-white line-clamp-1">{post.title}</span>
+                      {post.is_featured && (
+                        <span 
+                          className="absolute top-1 right-1 bg-[#eab308] text-black text-[9px] font-bold px-1.5 py-0.5 rounded sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                          style={{ backgroundColor: '#eab308' }}
+                        >
+                          HERO
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-[10px] text-popcorn-red font-black uppercase tracking-widest">{post.category}</span>
@@ -191,18 +206,20 @@ export default function AllPostsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button 
-                          onClick={() => toggleFeatured(post.id, post.is_featured)}
-                          className={cn(
-                            "p-2 rounded-lg transition-all",
-                            post.is_featured 
-                              ? "bg-popcorn-gold/20 text-popcorn-gold" 
-                              : "bg-white/5 text-popcorn-secondary hover:text-popcorn-gold"
-                          )}
-                          title={post.is_featured ? "Unfeature" : "Feature on Home"}
-                        >
-                          <Star size={16} fill={post.is_featured ? "currentColor" : "none"} />
-                        </button>
+                        {post.category === 'movies' && (
+                          <button 
+                            onClick={() => toggleFeatured(post.id, post.is_featured)}
+                            className={cn(
+                              "p-2 rounded-lg transition-all border",
+                              post.is_featured 
+                                ? "bg-[#eab308]/15 text-[#eab308] border-[#eab308]" 
+                                : "bg-transparent text-[#666] border-transparent hover:text-[#eab308] hover:border-[#eab308]/30"
+                            )}
+                            title={post.is_featured ? "Remove from Hero" : "Add to Hero"}
+                          >
+                            <Star size={16} fill={post.is_featured ? "currentColor" : "none"} />
+                          </button>
+                        )}
                         <Link 
                           target="_blank"
                           href={`/${post.category}/${post.slug}`}

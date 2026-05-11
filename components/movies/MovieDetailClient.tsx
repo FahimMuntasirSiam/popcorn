@@ -26,6 +26,7 @@ export default function MovieDetailClient({ movie, videoId }: MovieDetailClientP
               src={movie.cover_image}
               alt={movie.title}
               fill
+              sizes="100vw"
               className="object-cover blur-[40px] opacity-40 scale-110"
               priority
             />
@@ -42,6 +43,7 @@ export default function MovieDetailClient({ movie, videoId }: MovieDetailClientP
                 src={movie.cover_image} 
                 alt={movie.title} 
                 fill 
+                sizes="200px"
                 className="object-cover"
                />
              )}
@@ -148,10 +150,10 @@ export default function MovieDetailClient({ movie, videoId }: MovieDetailClientP
             </section>
 
             {/* AD PLACEMENT 1 */}
-            <div id="ad-movie-content" className="min-h-[120px] flex items-center justify-center overflow-hidden">
+            <div id="ad-movie-content" className="min-h-[120px] flex items-center justify-center overflow-hidden ad-container">
                <AdUnit 
                 className="hidden md:flex" 
-                minHeight="90px"
+                minHeight={90}
                 code={`
                   <script type="text/javascript">
                     atOptions = {
@@ -167,7 +169,7 @@ export default function MovieDetailClient({ movie, videoId }: MovieDetailClientP
                />
                <AdUnit 
                 className="md:hidden flex" 
-                minHeight="50px"
+                minHeight={50}
                 code={`
                   <script type="text/javascript">
                     atOptions = {
@@ -238,11 +240,11 @@ export default function MovieDetailClient({ movie, videoId }: MovieDetailClientP
             )}
 
             {/* AD BOX */}
-            <section className="bg-[#141414] rounded-xl border border-[#222] p-4 flex flex-col items-center">
+            <section className="bg-[#141414] rounded-xl border border-[#222] p-4 flex flex-col items-center ad-container">
                <p className="text-[9px] text-[#444] font-bold uppercase tracking-wider mb-3">ADVERTISEMENT</p>
                <div id="ad-movie-sidebar" className="min-h-[250px] w-full flex items-center justify-center bg-white/[0.02] rounded-lg">
                   <AdUnit 
-                    minHeight="250px"
+                    minHeight={250}
                     className="w-[300px] h-[250px]"
                     code={`<script type="text/javascript" src="https://pl29300532.profitablecpmratenetwork.com/cb/84/86/cb84861c3dec1995f49a5b34cd3e2a06.js"></script>`}
                    />
