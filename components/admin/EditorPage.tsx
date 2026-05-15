@@ -66,6 +66,34 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
   const lastSavedRef = useRef<Date | null>(null)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
+  // Refs for stable autosave (prevents interval reset on every keystroke)
+  const titleRef = useRef(title)
+  const slugRef = useRef(slug)
+  const metaDescriptionRef = useRef(metaDescription)
+  const localPostIdRef = useRef(localPostId)
+  const categoryRef = useRef(category)
+  const languageTagRef = useRef(languageTag)
+  const coverImageRef = useRef(coverImage)
+  const downloadLinksRef = useRef(downloadLinks)
+  const trailerUrlRef = useRef(trailerUrl)
+  const genreRef = useRef(genre)
+  const imdbRatingRef = useRef(imdbRating)
+  const statusRef = useRef(status)
+
+  // Keep refs in sync with state
+  useEffect(() => { titleRef.current = title }, [title])
+  useEffect(() => { slugRef.current = slug }, [slug])
+  useEffect(() => { metaDescriptionRef.current = metaDescription }, [metaDescription])
+  useEffect(() => { localPostIdRef.current = localPostId }, [localPostId])
+  useEffect(() => { categoryRef.current = category }, [category])
+  useEffect(() => { languageTagRef.current = languageTag }, [languageTag])
+  useEffect(() => { coverImageRef.current = coverImage }, [coverImage])
+  useEffect(() => { downloadLinksRef.current = downloadLinks }, [downloadLinks])
+  useEffect(() => { trailerUrlRef.current = trailerUrl }, [trailerUrl])
+  useEffect(() => { genreRef.current = genre }, [genre])
+  useEffect(() => { imdbRatingRef.current = imdbRating }, [imdbRating])
+  useEffect(() => { statusRef.current = status }, [status])
+
   // Safe command helper
   const safeCommand = (fn: (editor: any) => void) => {
     if (!editor || editor.isDestroyed) return
@@ -209,82 +237,102 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
     setSaving(false)
   }
 
+  // Stable autosave — only depends on editor (stable after init)
+  // All other values are read from refs at call time
   const performAutoSave = useCallback(async () => {
     if (!editor || editor.isDestroyed) return
-    if (!title?.trim()) return
-    
+    if (!titleRef.current?.trim()) return
+
     setSaveStatus('saving')
-    
+
     try {
       const content = editor.getHTML()
       const wordCountValue = editor.storage.characterCount?.words() ?? 0
-      
+
       const response = await fetch(
-        '/api/admin/autosave', 
+        '/api/admin/autosave',
         {
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json' 
+          headers: {
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            id: localPostId || null,
-            title,
+            id: localPostIdRef.current || null,
+            title: titleRef.current,
             content,
             word_count: wordCountValue,
-            status: 'draft',
-            slug: slug || null,
-            meta_description: metaDescription || null,
+            status: statusRef.current || 'draft',
+            slug: slugRef.current || null,
+            meta_description: metaDescriptionRef.current || null,
           }),
           signal: AbortSignal.timeout(10000)
         }
       )
-      
+
       if (!response.ok) throw new Error('Save failed')
-      
+
       const data = await response.json()
-      
+
       // If new post was created, save the ID
-      // but DO NOT navigate
-      if (data.id && !localPostId) {
+      // but DO NOT navigate — just store so future saves update
+      if (data.id && !localPostIdRef.current) {
         setLocalPostId(data.id)
       }
-      
+
       lastSavedRef.current = new Date()
       setSaveStatus('saved')
-      
-      // Reset to idle after 3 seconds
       setTimeout(() => setSaveStatus('idle'), 3000)
-      
+
     } catch (error) {
       console.error('Auto-save error:', error)
       setSaveStatus('error')
       setTimeout(() => setSaveStatus('idle'), 5000)
       // NEVER throw or navigate on error
     }
-  }, [editor, title, localPostId, slug, metaDescription])
+  }, [editor])
+  // ^^^^^^^^ ONLY depends on editor which is stable after init
 
+  // Keep a ref to performAutoSave so the interval always calls the latest version
+  const performAutoSaveRef = useRef(performAutoSave)
   useEffect(() => {
-    if (status !== 'draft') return 
+    performAutoSaveRef.current = performAutoSave
+  }, [performAutoSave])
 
-    // Clear any existing interval
-    if (autoSaveIntervalRef.current) {
-      clearInterval(autoSaveIntervalRef.current)
-    }
-    
-    // Start new interval
-    autoSaveIntervalRef.current = setInterval(
-      performAutoSave, 
-      90000 // every 90 seconds
-    )
-    
-    // Cleanup on unmount
-    return () => {
-      if (autoSaveIntervalRef.current) {
-        clearInterval(autoSaveIntervalRef.current)
-        autoSaveIntervalRef.current = null
+  // Stable interval — runs ONCE on mount, never resets on typing
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      performAutoSaveRef.current()
+    }, 90000) // 90 seconds, NEVER resets on typing
+
+    return () => clearInterval(intervalId)
+  }, []) // Empty deps — runs once on mount
+
+  // Ctrl+S keyboard shortcut for manual save
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        performAutoSaveRef.current()
       }
     }
-  }, [performAutoSave, status])
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  // Save before page unload
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (titleRef.current?.trim()) {
+        performAutoSaveRef.current()
+        e.preventDefault()
+        e.returnValue = 'You have unsaved changes. Are you sure?'
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [])
 
   // Image Upload
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -353,7 +401,7 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
           <div className="border border-white/10 rounded-2xl overflow-hidden shadow-inner bg-neutral-900/30">
             <TipTapToolbar editor={editor} />
             <div className="min-h-[400px] transition-all duration-300">
-              <EditorErrorBoundary onReset={() => router.refresh()}>
+              <EditorErrorBoundary onReset={() => setSaveStatus('idle')}>
                 <EditorContent editor={editor} />
               </EditorErrorBoundary>
             </div>
@@ -377,7 +425,11 @@ export default function EditorPage({ initialData, postId }: EditorPageProps) {
                   </span>
                 )}
                </div>
-               <span>Words: {wordCount}</span>
+               <div className="flex items-center space-x-3">
+                 <span>Words: {wordCount}</span>
+                 <span className="text-neutral-600 normal-case tracking-normal">·</span>
+                 <span className="text-neutral-600 normal-case tracking-normal">Ctrl+S to save</span>
+               </div>
             </div>
           </div>
         </div>
