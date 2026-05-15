@@ -206,7 +206,7 @@ export default function AllPostsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        {post.category === 'movies' && (
+                        {(post.category === 'movies' || post.category === 'web-series') && (
                           <button 
                             onClick={() => toggleFeatured(post.id, post.is_featured)}
                             className={cn(

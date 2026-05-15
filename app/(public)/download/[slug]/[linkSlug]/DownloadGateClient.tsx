@@ -66,7 +66,7 @@ export default function DownloadGateClient({ post, link, slug, linkSlug }: Downl
         throw new Error(data.error || 'Link expired. Please try again.')
       }
 
-      window.open(data.url, '_blank')
+      window.open(data.url, '_blank', 'noopener,noreferrer')
     } catch (err: any) {
       setError(err.message)
     } finally {

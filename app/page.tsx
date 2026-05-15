@@ -9,21 +9,21 @@ export const revalidate = 3600 // revalidate every hour
 export default async function Home() {
   const supabase = createClient()
 
-  // 1. Fetch Featured Movies (limit 10)
+  // 1. Fetch Featured Movies & Web Series (limit 10)
   const { data: featuredMovies } = await supabase
     .from('posts')
     .select('*')
-    .eq('category', 'movies')
+    .in('category', ['movies', 'web-series'])
     .eq('status', 'published')
     .eq('is_featured', true)
     .order('updated_at', { ascending: false })
     .limit(10)
 
-  // 2. Fetch Latest 5 Movies (Fallback)
+  // 2. Fetch Latest 5 Movies & Web Series (Fallback)
   const { data: latestMovies } = await supabase
     .from('posts')
     .select('*')
-    .eq('category', 'movies')
+    .in('category', ['movies', 'web-series'])
     .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(5)
